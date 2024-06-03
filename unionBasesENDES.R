@@ -11,20 +11,19 @@
 ################################################################################
 # 0. Librerías y direcciones ----
 
-bdEndes <- "/etc/data/endes"
-#bdEndes <- "C:/Users/User/OneDrive - Universidad del Pacífico/1. Documentos/0. Bases de datos/03. ENDES/1. Data"
-bdTrabajo <- "/etc/data/base_trabajo"
-#bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/GiZ Pobreza Urbana/1. Productos/0. Insumos/1. Bases de datos"
+#bdEndes <- "/etc/data/endes"
+bdEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/0. Original"
+#bdTrabajo <- "/etc/data/base_trabajo"
+bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
 library(dplyr)  
 library(haven)
 
-# 1. Append de bases 2015-2022 ----
+# 1. Append de bases 2015-2023 ----
 
-data15_22 <- c("rec44" ,"rec43" , "rec42", "rec41", "rec21", "re758081", "re516171",
+data19_23 <- c("dit", "rec44" ,"rec43" , "rec42", "rec41", "rec21", "re758081", "re516171",
                "re223132", "programas_sociales_x_hogar", "rec82", "rec83", "rec84dv",
                "rec91", "rec94", "rec95", "rec0111", "rech0", "rech1", "rech4", 
                "rech5", "rech6", "rech23")
-data19_22 <- c("dit")
 
 # Set working directory
 setwd(bdEndes)
@@ -40,33 +39,8 @@ convert_labeled_to_numeric <- function(df) {
 }
 
 # Loop through each dataset and year
-for (mod in data15_22) {
-  for (x in 2015:2022) {
-    # Read data
-    data <- read_dta(paste0(mod, "_", x, ".dta"))
-    colnames(data) <- tolower(colnames(data))
-    data$id1 <- x
-    data <- convert_labeled_to_numeric(data)
-    
-    # Store the combined data frame in the list
-    if (x == 2015) {
-      df <- data
-    }
-    else {
-      dataNames <- colnames(data)
-      dfNames <- colnames(df)
-      common_cols <- intersect(dataNames, dfNames)
-      df <- rbind(df[common_cols], data[common_cols])
-      
-    }
-  }
-  assign(paste0(mod), df)
-  
-}
-
-# Loop through each dataset and year
-for (mod in data19_22) {
-  for (x in 2019:2022) {
+for (mod in data19_23) {
+  for (x in 2019:2023) {
     # Read data
     data <- read_dta(paste0(mod, "_", x, ".dta"))
     colnames(data) <- tolower(colnames(data))
@@ -113,7 +87,8 @@ baseHogaresENDES <- rech0 %>%
          lavadora = sh61o,
          computadora = sh61p,
          internet = sh61q,
-         cortinas = sh76e) %>% 
+         cortinas = sh76e,
+         celular = hv243a) %>% 
   mutate(agua = case_when(hv201 == 11 | hv201 == 12 ~ 1,
                           hv201 == 99 ~ NA,
                           hv201 == NA ~ NA,
@@ -152,13 +127,13 @@ baseHogaresENDES <- rech0 %>%
                            hv212 == 9 ~ NA,
                            hv212 == NA ~ NA,
                            TRUE ~ 0),
-         pisoNaturalRustico = case_when(hv213 == 11 | hv213 == 21 | hv213 == 34 ~ 1,
+         pisoBajaCalidad = case_when(hv213 == 11 | hv213 == 21 | hv213 == 96 ~ 1,
                                        hv213 == NA ~ NA,
                                        TRUE ~ 0),
-         paredNaturalRustico = case_when(hv214 < 29 ~ 1,
+         paredBajaCalidad = case_when(hv214 < 29 | hv214 == 41 | hv214 == 96 ~ 1,
                                          hv214 == NA ~ NA,
                                          TRUE ~ 0),
-         techoNaturalRustico = case_when(hv215 < 29 ~ 1,
+         techoBajaCalidad = case_when(hv215 < 29 | hv215 == 41 | hv215 == 96 ~ 1,
                                          hv215 == NA ~ NA,
                                          TRUE ~ 0),
          hacinamiento = case_when(hv216 == 0 ~ 0,
@@ -172,19 +147,6 @@ baseHogaresENDES <- rech0 %>%
          combustibleCocina = case_when(hv226 >= 6 & hv226 < 95 ~ 1 ,
                                        hv226 == NA ~ NA,
                                        TRUE ~ 0))
-baseHogaresENDES <- baseHogaresENDES %>%
-  mutate(piso = case_when(hv213 == 10 ~ 3,
-                          hv213 == 20 ~ 2,
-                          hv213 == 30 ~ 1,
-                          TRUE ~ NA),
-         pared = case_when(hv214 == 10 ~ 3,
-                           hv214 == 20 ~ 2,
-                           hv214 == 30 ~ 1,
-                           TRUE ~ NA),
-         techo = case_when(hv215 == 10 ~ 3,
-                           hv215 == 20 ~ 2,
-                           hv215 == 30 ~ 1,
-                           TRUE ~ NA))
 
 baseHogaresENDES <- baseHogaresENDES %>%
   mutate(nActivosPrioritarios = rowSums(select(., computadora, radio, lavadora, licuadora, microndas, refrigerador, tv)))
@@ -202,7 +164,7 @@ basePersonasENDES <- rech4 %>%
                           TRUE ~ hv105),
          educ = case_when(hv109 == 8 | hv109 == NA ~ NA,
                           TRUE ~ hv109),
-         anioEduc = case_when(hv108 == 97 | hv108 == 98 | hv108 == NA ~ NA,
+         aniosEduc = case_when(hv108 == 97 | hv108 == 98 | hv108 == NA ~ NA,
                               TRUE ~ hv108),
          noEstudia = case_when(hv129 == 0 | hv129 == 4 | hv129 == 5 ~ 1,
                                hv129 == NA | hv129 == 9 ~ NA,
@@ -232,71 +194,80 @@ baseMujeresENDES <- baseMujeresENDES%>%
 # Variables de violencia
 ## Violencia física ejercida por el esposo
 baseMujeresENDES <- baseMujeresENDES %>%
-  mutate(violenciaEsposoEmpujo = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                           d105a > 0 & d105a <= 3 ~ 1,
-                                           TRUE ~ NA),
-         violenciaEsposoAbofeteo = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                   d105b > 0 & d105b <= 3 ~ 1,
-                                   TRUE ~ NA),
-         violenciaEsposoGolpe = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                    d105c > 0 & d105c <= 3 ~ 1,
-                                    TRUE ~ NA),
-         violenciaEsposoPatada = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                   d105d > 0 & d105d <= 3 ~ 1,
-                                   TRUE ~ NA),
-         violenciaEsposoAhorco = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                    d105e > 0 & d105e <= 3 ~ 1,
-                                    TRUE ~ NA),
-         violenciaEsposoArma1 = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                      d105f > 0 & d105f <= 3 ~ 1,
-                                      TRUE ~ NA),
-         violenciaEsposoArma2 = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                      d105g > 0 & d105g <= 3 ~ 1,
-                                      TRUE ~ NA),
-         violenciaEsposoBrazo = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                    d105j > 0 & d105j <= 3 ~ 1,
-                                    TRUE ~ NA))
+  mutate(violenciaEsposoFEmpujo = case_when(d105a > 0 & d105a < 3 ~ 1,
+                                           v044 == 0 | v502 == 0 ~ NA,
+                                           TRUE ~ 0),
+         violenciaEsposoFAbofeteo = case_when(d105b > 0 & d105b < 3 ~ 1,
+                                             v044 == 0 | v502 == 0 ~ NA,
+                                             TRUE ~ 0),
+         violenciaEsposoFGolpe = case_when(d105c > 0 & d105c < 3 ~ 1,
+                                          v044 == 0 | v502 == 0 ~ NA,
+                                          TRUE ~ 0),
+         violenciaEsposoFPatada = case_when(d105d > 0 & d105d < 3 ~ 1,
+                                           v044 == 0 | v502 == 0 ~ NA,
+                                           TRUE ~ 0),
+         violenciaEsposoFAhorco = case_when(d105e > 0 & d105e < 3 ~ 1,
+                                           v044 == 0 | v502 == 0 ~ NA,
+                                           TRUE ~ 0),
+         violenciaEsposoFArma1 = case_when(d105f > 0 & d105f < 3 ~ 1,
+                                          v044 == 0 | v502 == 0 ~ NA,
+                                          TRUE ~ 0),
+         violenciaEsposoFArma2 = case_when(d105g > 0 & d105g < 3 ~ 1,
+                                          v044 == 0 | v502 == 0 ~ NA,
+                                          TRUE ~ 0),
+         violenciaEsposoFBrazo = case_when(d105j > 0 & d105j < 3 ~ 1,
+                                          v044 == 0 | v502 == 0 ~ NA,
+                                          TRUE ~ 0)) %>% 
+  mutate(violenciaEsposoFisica = case_when(v044 == 0 | v502 == 0  ~ 0,
+                                           rowSums(select(., starts_with("violenciaEsposoF")), na.rm=TRUE) >0  ~ 1,
+                                           TRUE ~ NA))
 
 ## Violencia sexual ejercida por el esposo
 baseMujeresENDES <- baseMujeresENDES %>%
-  mutate(violenciaEsposoSex = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                           d105h > 0 & d105h <= 3 ~ 1,
-                                           TRUE ~ NA),
-         violenciaEsposoActSex = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                             d105i > 0 & d105i <= 3 ~ 1,
-                                             TRUE ~ NA))
+  mutate(violenciaEsposoSSex = case_when(d105h > 0 & d105h < 3 ~ 1,
+                                        v044 == 0 | v502 == 0 ~ NA,
+                                        TRUE ~ 0),
+         violenciaEsposoSActSex = case_when(d105i > 0 & d105i < 3 ~ 1,
+                                           v044 == 0 | v502 == 0 ~ NA,
+                                           TRUE ~ 0)) %>% 
+  mutate(violenciaEsposoSexual = case_when(v044 == 0 | v502 == 0  ~ 0,
+                                           rowSums(select(., starts_with("violenciaEsposoS")), na.rm=TRUE) >0  ~ 1,
+                                           TRUE ~ NA))
 
 ## Violencia psicológica y/o verbal ejercida por el esposo o compañero
 baseMujeresENDES <- baseMujeresENDES %>%
-  mutate(violenciaESposoHumil = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                    d103a > 0 & d103a <= 3 ~ 1,
-                                    TRUE ~ NA),
-         violenciaEsposoCelo = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                    d101a == 1 ~ 1,
-                                    TRUE ~ NA),
-         violenciaEsposoAcus = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                    d101b == 1 ~ 1,
-                                    TRUE ~ NA),
-         violenciaEsposoContacto = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                      d101c == 1 | d101d == 1 ~ 1,
-                                      TRUE ~ NA),
-         violenciaEsposoLugar = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                    d101e == 1 ~ 1,
-                                    TRUE ~ NA),
-         violenciaEsposoDinero = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                    d101f == 1 ~ 1,
-                                    TRUE ~ NA),
-         violenciaEsposoAmenaza1 = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                   d103b > 0 & d103b <= 3 ~ 1,
-                                   TRUE ~ NA),
-         violenciaEsposoAmenaza2 = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                   d103d > 0 & d103d <= 3 ~ 1,
-                                   TRUE ~ NA))
+  mutate(violenciaESposoPHumil = case_when(d103a > 0 & d103a < 3 ~ 1,
+                                          v044 == 0 | v502 == 0 ~ NA,
+                                          TRUE ~ 0),
+         violenciaEsposoPCelo = case_when(v044 == 0 | v502 == 0 ~ 0,
+                                         d101a == 1 ~ 1,
+                                         TRUE ~ NA),
+         violenciaEsposoPAcus = case_when(v044 == 0 | v502 == 0 ~ 0,
+                                         d101b == 1 ~ 1,
+                                         TRUE ~ NA),
+         violenciaEsposoPContacto = case_when(v044 == 0 | v502 == 0 ~ 0,
+                                             d101c == 1 | d101d == 1 ~ 1,
+                                             TRUE ~ NA),
+         violenciaEsposoPLugar = case_when(v044 == 0 | v502 == 0 ~ 0,
+                                          d101e == 1 ~ 1,
+                                          TRUE ~ NA),
+         violenciaEsposoPDinero = case_when(v044 == 0 | v502 == 0 ~ 0,
+                                           d101f == 1 ~ 1,
+                                           TRUE ~ NA),
+         violenciaEsposoPAmenaza1 = case_when(v044 == 0 | v502 == 0 ~ 0,
+                                             d103b > 0 & d103b < 3 ~ 1,
+                                             TRUE ~ NA),
+         violenciaEsposoPAmenaza2 = case_when(v044 == 0 | v502 == 0 ~ 0,
+                                             d103d > 0 & d103d < 3 ~ 1,
+                                             TRUE ~ NA)) %>% 
+  mutate(violenciaEsposoPsico = case_when(v044 == 0 | v502 == 0  ~ 0,
+                                          rowSums(select(., starts_with("violenciaEsposoP")), na.rm=TRUE) >0  ~ 1,
+                                          TRUE ~ NA))
 
 ## Cualquier tipo de violencia
 baseMujeresENDES <- baseMujeresENDES %>%
-  mutate(violenciaEsposo = case_when(v044 == 1 & v502 > 0 ~ 0,
-                                    rowSums(select(., starts_with("violenciaEsposo"))) >0  ~ 1,
+  mutate(violenciaEsposo = case_when(v044 == 0 | v502 == 0  ~ 0,
+                                    rowSums(select(., c('violenciaEsposoPsico','violenciaEsposoFisica', 'violenciaEsposoSexual')), na.rm=TRUE) >0  ~ 1,
                                     TRUE ~ NA))
 
 # Uso actual de métodos anticonceptivos
@@ -324,19 +295,6 @@ baseMujeresENDES <- baseMujeresENDES %>%
   mutate(tuvoETS = case_when(v763a == 1 ~ 1,
                              v763a == NA ~ NA,
                              TRUE ~ 0))
-
-mujeresHogares <- rech5 %>%
-  mutate(caseid = paste(hhid, ha0, sep = " ")) %>% 
-  select(id1, caseid, ha69) %>% 
-  left_join(baseMujeresENDES, by = c("id1", "caseid")) %>% 
-  mutate(pesoVIH = ha69)
-
-# HA69 Peso del VIH (6 decimales)
-# V761 En última relación sexual usó condón
-# V761B Relación sexual con otro hombre (1) usó condón
-# V761C Relación sexual con otro hombre (2) usó condón
-# V763A Tuvo alguna ETS en los últimos 12 Meses
-
 #Cobertura de seguro de salud para mujeres de 15 a 49 años
 baseMujeresENDES <- baseMujeresENDES %>%
   mutate(seguroEssalud = case_when(v481e == 1 & v012 > 14 ~ 1,
@@ -349,7 +307,7 @@ baseMujeresENDES <- baseMujeresENDES %>%
                                  TRUE ~ 0),
          seguroPriv = case_when(v481d ==1 & v012 > 14 ~ 1,
                                 TRUE ~ 0),
-         algunSeguro = case_when(rowSums(select(baseMujeresENDES, starts_with("v481"))) > 1 & v012 > 14 ~ 1,
+         algunSeguro = case_when(rowSums(select(baseMujeresENDES, starts_with("v481")), na.rm = TRUE) > 1 & v012 > 14 ~ 1,
                                  TRUE ~ 0))
 
 #Llevamos los indicadores mujeres a nivel hogar
@@ -389,7 +347,7 @@ baseNinosENDES <- rech6 %>%
          pesoTalla = case_when(hc11 == NA ~ NA,
                                TRUE ~ hc11),
          mujer = case_when(hc27 == 2 ~ 1,
-                           TRUE ~ hc27),
+                           hc27 == 1 ~ 0),
          anemiaNinos = case_when(hc57 < 4 & edad <= 60 ~ 1,
                                  hc57 == NA ~ NA,
                                  TRUE ~ 0),
@@ -432,11 +390,12 @@ baseHogaresENDES <- baseHogaresENDES %>%
 
 rm(baseNinos1ENDES)
 
-#Desarrollo infantil - Comunicación efectiva
+
+#Desarrollo infantil - Comunicación efectiva -----
 baseNinosAuxENDES <- dit %>%
-  left_join(rec21, by = c("id1", "caseid", "bidx")) %>%
-  left_join(rec0111, by = c("id1", "caseid")) %>%
-  left_join(rec91, by = c("id1", "caseid")) %>%
+  left_join(rec21 %>% select("id1", "caseid", "bidx", "b4"), by = c("id1", "caseid", "bidx")) %>%
+  left_join(rec0111 %>% select("id1", "caseid", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190"), by = c("id1", "caseid")) %>%
+  left_join(rec91 %>% select("id1", "caseid", "sregion", "s119", "s108n"), by = c("id1", "caseid")) %>%
   mutate(e3conv = case_when(qi478e3 == 1 ~ 1,
                             qi478e3 == 2 ~ 0,
                             TRUE ~ NA),
@@ -500,7 +459,48 @@ baseNinosAuxENDES <- dit %>%
          r4_24_36m = case_when(h345 < 3 ~ 0,
                                h345 == 3 ~ 1,
                                TRUE ~ NA),
-         desInfCom = rowSums(select(., starts_with("r4_")), na.rm = TRUE))
+         f2aconv = case_when(qi478f2_a == 1 ~ 1,
+                             qi478f2_a == 2 ~ 0,
+                             TRUE ~ NA),
+         f2bconv = case_when(qi478f2_b == 1 ~ 1,
+                             qi478f2_b == 2 ~ 0,
+                             TRUE ~ NA),
+         f2cconv = case_when(qi478f2_c == 1 ~ 1,
+                             qi478f2_c == 2 ~ 0,
+                             TRUE ~ NA),
+         f2dconv = case_when(qi478f2_d == 1 ~ 1,
+                             qi478f2_d == 2 ~ 0,
+                             TRUE ~ NA),
+         f2econv = case_when(qi478f2_e == 1 ~ 1,
+                             qi478f2_e == 2 ~ 0,
+                             TRUE ~ NA),
+         e7conv = case_when(qi478e7 == 1 ~ 1,
+                            qi478e7 == 2 ~ 0,
+                            TRUE ~ NA),
+         e8conv = case_when(qi478e8 == 1 ~ 1,
+                            qi478e8 == 2 ~ 0,
+                            TRUE ~ NA),
+         e9conv = case_when(qi478e9 == 1 ~ 1,
+                            qi478e9 == 2 ~ 0,
+                            TRUE ~ NA),
+         e10conv = case_when(qi478e10 == 1 | qi478e10 == 3 | qi478e10 == 4 ~ 1,
+                             qi478e10 == 2 | qi478e10 == 5 ~ 0,
+                             TRUE ~ NA),
+         e6f6conv = case_when(qi478e6 == 1 & qi478f6 == 1 ~ 1,
+                              qi478e6 == 2 | qi478f6 == 2 ~ 0,
+                              TRUE ~ NA),
+         g4h4conv = case_when(qi478h4 == 1 & qi478g4 == 1 ~ 1,
+                              qi478h4 == 2 | qi478g4 == 2 ~ 0,
+                              TRUE ~ NA)) %>% 
+  mutate(desInfCom = rowSums(select(., starts_with("r4_")), na.rm = TRUE),
+         indEntorno2 = rowSums(select(., starts_with("f2")), na.rm = TRUE))
+
+
+# Porcentaje de niñas y niños entre 24 y 71 meses de edad que tienen en casa materiales de juego estructurados y no estructurados
+# H8I4J4A H8I4J4B
+
+# Porcentaje de niñas y niños entre 24 y 71 meses de edad cuya madre no ejerce conductas de castigo físico hacia su hija/o
+# H12I8J8
 
 #Desarrollo infantil - Regulación de emociones
 baseNinosAuxENDES <- baseNinosAuxENDES %>%
@@ -547,22 +547,13 @@ baseNinosAuxENDES <- baseNinosAuxENDES %>%
                         h567 == 3 ~ 1,
                         TRUE ~ NA))
 
-baseNinos1ENDES <- baseNinosAuxENDES %>%
-  mutate(hhid = substr(caseid, 1, 15)) %>%
-  select(id1, hhid, desInfCom, desInfEmo, desInfJue) %>%
-  group_by(id1, hhid, .groups = 'drop') %>%
-  summarize(desInfComH = sum(desInfCom, na.rm = TRUE),
-            desInfEmoH = sum(desInfEmo, na.rm = TRUE),
-            desInfJueH = sum(desInfJue, na.rm = TRUE)) %>%
-  select(- .groups)
+varList <- c("id1", "hhid", "hv012", "mieperho", "dominio", "area", "region", "hv026", "altitud", "quintil", "riqueza", "agua", "tiempoAgua", 
+             "desague", "electricidad", "radio", "tv", "refrigerador", "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad",
+             "techoBajaCalidad", "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios")
 
-baseHogaresENDES <- baseHogaresENDES %>%
-  left_join(baseNinos1ENDES, by = c("id1", "hhid")) %>%
-  mutate (desInfComH = desInfComH / nNinos,
-          desInfEmoH = desInfEmoH / nNinos,
-          desInfJueH = desInfJueH / nNinos)
-
-rm(baseNinos1ENDES, baseNinosAuxENDES)
+baseNinosAuxENDES <- baseNinosAuxENDES %>% 
+  mutate(hhid = substr(caseid, 1, 15)) %>% 
+  left_join(baseHogaresENDES %>% select(all_of(varList)), by = c("id1", "hhid"))
 
 #Talla y peso al nacer
 baseNinosAux1ENDES <- rec0111 %>%
@@ -576,7 +567,7 @@ baseNinosAux2ENDES <- rec21 %>%
   left_join(rec41, by = c("id1", "caseid", "midx")) %>%
   left_join(rec43, by = c("id1", "caseid", "midx"))
 
-baseNinosAuxENDES <- baseNinosAux1ENDES %>%
+baseNinosAux1ENDES <- baseNinosAux1ENDES %>%
   left_join(baseNinosAux2ENDES, by = c("id1", "caseid")) %>%
   mutate(edadM = v008 - b3,
          pesoNac = case_when(m19 < 2500 & v012 > 14 ~ 1,
@@ -602,7 +593,17 @@ baseNinosAuxENDES <- baseNinosAux1ENDES %>%
                              h11 == 2 & b5 == 1 & edadM < 60 & v012 > 14 ~ 1,
                              TRUE ~ NA))
 
+baseNinosAux1ENDES <- baseNinosAux1ENDES %>% 
+  rename(bidx = midx)
+
+baseNinosAuxENDES <- baseNinosAuxENDES %>% 
+  left_join(baseNinosAux1ENDES %>%  select("id1", "caseid", "bidx", "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59"), by = c("id1", "caseid", "bidx"))
+
 rm(baseNinosAux1ENDES, baseNinosAux2ENDES)
+
+dirBases <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+setwd(dirBases)
+write_dta(data = baseNinosAuxENDES, "baseDIT.dta")
 
 baseNinos1ENDES <- baseNinosAuxENDES %>%
   mutate(hhid = substr(caseid, 1, 15)) %>%
@@ -623,7 +624,6 @@ baseHogaresENDES <- baseHogaresENDES %>%
 
 rm(baseNinos1ENDES)
 
-setwd("/etc/data/base_trabajo")
 write_dta(data = baseHogaresENDES, "baseHogaresENDES.dta")
 
 

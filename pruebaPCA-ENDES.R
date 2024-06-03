@@ -24,9 +24,10 @@ library(haven)
 
 # 1. Generación de bases de datos -----
 
-dirEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+#dirEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+dirEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
 setwd(dirEndes)
-#baseHogares <- read_dta("baseHogaresENDES.dta")
+baseHogares <- read_dta("baseHogaresENDES.dta")
 baseNinosDIT <- read_dta("baseDIT.dta")
 
 ## 1.1. A nivel de hogares -----
@@ -60,7 +61,7 @@ var9a12 <-c("bord", "qi478", "qi478a", "qi478e1", "qi478e2", "qi478e3", "qi478e4
             "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
             "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
             "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
-            "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59")
+            "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59","e10conv")
 
 baseDIT_9a12 <- baseNinosDIT %>% 
   filter(area == 1) %>% 
@@ -94,7 +95,7 @@ baseDIT_55a71 <- baseNinosDIT %>%
 # Conjunto de variables numéricas a nivel de hogar
 varNumDIT_9a12 <- c("qi478", "qi478e1", "qi478e2", "qi478e3", "qi478e4", "qi478e5",
                     "qi478e6", "qi478e7", "qi478e8", "qi478e9", "qi478e10", 
-                    "sexo", "edadMadre", "v149", "s108n", "e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
+                    "sexo", "edadMadre", "v149", "s108n", "e3conv", "e4conv", "e5conv", "e10conv","e345", "r4_9_12m", "hv012",
                     "mieperho", "hv026", "altitud", "riqueza",
                     "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
                     "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",

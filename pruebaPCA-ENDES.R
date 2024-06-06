@@ -53,23 +53,32 @@ baseHogares <- baseHogares %>%
 
 ## 1.2. A nivel de niños -----
 
-var9a12 <-c("bord", "qi478", "qi478a", "qi478e1", "qi478e2", "qi478e3", "qi478e4", "qi478e5",
+var9a12 <-c("bord", "qi478", "qi478a",  "qi478e2", "qi478e3", "qi478e4", "qi478e5",
             "qi478e6", "qi478e7", "qi478e8", "qi478e9", "qi478e10", "caseid", "bidx", "id1",
             "b4", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190", "sregion",
-            "s119", "s108n", "e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
+            "s119", "s108n","e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
             "e7conv","e8conv", "e9conv","e10conv","e6f6conv",
             "mieperho", "dominio", "area", "region", "hv026", "altitud", "quintil", "riqueza",
             "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
             "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
             "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
-            "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59","e10conv")
+            "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59",
+            #"e2conv","e6conv"
+            )
 
 baseDIT_9a12 <- baseNinosDIT %>% 
   filter(area == 1) %>% 
   filter(qi478 >= 9 & qi478 <= 12) %>% 
   select(all_of(var9a12)) %>% 
   mutate(sexo = case_when(b4 == 1 ~ 1,
-                          TRUE ~ 0)) %>% 
+                          TRUE ~ 0),
+         #e2conv = case_when(qi478e2 == 1 ~ 1,
+                            #qi478e2 == 2 ~ 0,
+                            #TRUE ~ NA),
+         #e6conv = case_when(qi478e6 == 1 ~ 1,
+                            #qi478e6 == 2 ~ 0,
+                            #TRUE ~ NA)
+         ) %>% 
   rename(edadMadre = v012)
 
 baseDIT_13a18 <- baseNinosDIT %>% 
@@ -94,15 +103,17 @@ baseDIT_55a71 <- baseNinosDIT %>%
 
 
 # Conjunto de variables numéricas a nivel de hogar
-varNumDIT_9a12 <- c("qi478", "qi478e1", "qi478e2", "qi478e3", "qi478e4", "qi478e5",
+varNumDIT_9a12 <- c("qi478", "qi478e2", "qi478e3", "qi478e4", "qi478e5",
                     "qi478e6", "qi478e7", "qi478e8", "qi478e9", "qi478e10", 
-                    "sexo", "edadMadre", "v149", "s108n", "e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
-                    "e7conv","e8conv", "e9conv","e10conv","e6f6conv",
+                    "sexo", "edadMadre", "v149", "s108n","e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
+                    "e7conv","e8conv", "e9conv","e10conv","e6f6conv"
                     "mieperho", "hv026", "altitud", "riqueza",
                     "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
                     "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
                     "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
-                    "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo")
+                    "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo",
+                   # "e2conv","e6conv"
+                    )
 
 # Bases de datos a nivel de Hogares
 bPCA_9a12 <- baseDIT_9a12 %>% 
@@ -147,7 +158,7 @@ loadings1
 # Para visualización
 loadings1t <- as.data.frame(t(loadings1))
 
-View(loadings1t[abs(loadings1t$riqueza) > 0.2,])
+View(loadings1t[abs(loadings1t$e345) > 0.2,])#con e345
 # Análisis de alineamiento: solo componentes con peso de gasto > 0.2
 
 # Ranking de las variables más importantes del PCA

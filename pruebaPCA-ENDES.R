@@ -106,13 +106,13 @@ baseDIT_55a71 <- baseNinosDIT %>%
 varNumDIT_9a12 <- c("qi478", "qi478e2", "qi478e3", "qi478e4", "qi478e5",
                     "qi478e6", "qi478e7", "qi478e8", "qi478e9", "qi478e10", 
                     "sexo", "edadMadre", "v149", "s108n","e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
-                    "e7conv","e8conv", "e9conv","e10conv","e6f6conv"
+                    "e7conv","e8conv", "e9conv","e10conv","e6f6conv",
                     "mieperho", "hv026", "altitud", "riqueza",
                     "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
                     "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
                     "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
                     "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo",
-                   # "e2conv","e6conv"
+                   #"e2conv","e6conv"
                     )
 
 # Bases de datos a nivel de Hogares

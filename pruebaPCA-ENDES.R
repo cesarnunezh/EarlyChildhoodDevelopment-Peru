@@ -53,74 +53,203 @@ baseHogares <- baseHogares %>%
 
 ## 1.2. A nivel de niños -----
 
-var9a12 <-c("bord", "qi478", "qi478a",  "qi478e2", "qi478e3", "qi478e4", "qi478e5",
-            "qi478e6", "qi478e7", "qi478e8", "qi478e9", "qi478e10", "caseid", "bidx", "id1",
+var9a12 <-c("bord", "qi478", "qi478a", "caseid", "bidx", "id1",
             "b4", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190", "sregion",
-            "s119", "s108n","e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
-            "e7conv","e8conv", "e9conv","e10conv","e6f6conv",
+            "s119", "s108n",
+            "e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
+            "e7conv","e8conv", "e9conv","e10conv","e6f6conv","r4_9_12m",
             "mieperho", "dominio", "area", "region", "hv026", "altitud", "quintil", "riqueza",
             "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
             "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
             "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
             "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59",
-            #"e2conv","e6conv"
-            )
+            "e1camina_solo","e2conv","e6conv")
+
+var13a18 <-c("bord", "qi478", "qi478a", "caseid", "bidx", "id1", 
+             "b4", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190","sregion","r4_13_18m",
+             "s119", "s108n",
+             "f2aconv", "f2bconv", "f2cconv", "f2dconv","f2econv","f3conv", "f4conv", "f5conv", "f345", "e6f6conv",
+             "f1camina_solo", "f2conv", "f6conv",
+             "hv012","mieperho", "dominio", "area", "region", "hv026", "altitud", "quintil", "riqueza",
+             "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+             "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+             "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
+             "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59")
+
+
+var19a23 <-c("bord", "qi478", "qi478a", "caseid", "bidx", "id1", 
+             "b4", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190", "sregion",
+             "s119", "s108n",
+             "g1conv","g2aconv","g2bconv","g2cconv","g2abc","g3conv","g4conv","g345","r4_19_23m",
+             "hv012","mieperho", "dominio", "area", "region", "hv026", "altitud", "quintil", "riqueza",
+             "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+             "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+             "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
+             "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59") 
+
+var24a36 <-c("bord", "qi478", "qi478a", "caseid", "bidx", "id1", 
+             "b4", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190", "sregion",
+             "s119", "s108n",
+             "h1conv","h2conv","h3conv","h345","h4conv","h5conv","h6conv","h7conv","h567", "desInfJue" ,
+             "h8aconv","h8bconv","h9conv", "h10conv","h11conv","h12conv","r4_24_36m",
+             "hv012","mieperho", "dominio", "area", "region", "hv026", "altitud", "quintil", "riqueza",
+             "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+             "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+             "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
+             "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59") 
+
+var37a54 <-c("bord", "qi478", "qi478a", "caseid", "bidx", "id1", 
+             "b4", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190", "sregion",
+             "s119", "s108n",
+             "desInfEmo", "i1conv", "i2conv","i3conv","i4aconv","i4bconv","i5conv","i6conv","i7conv","i8conv",
+             "hv012","mieperho", "dominio", "area", "region", "hv026", "altitud", "quintil", "riqueza",
+             "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+             "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+             "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
+             "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59")
+
+var55a71 <-c("bord", "qi478", "qi478a", "caseid", "bidx", "id1", 
+             "b4", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190", "sregion",
+             "s119", "s108n",
+             "desInfEmo", "j1conv","j2conv","j3conv","j4aconv", "j4bconv","j5conv","j6conv","j7conv","j8conv",
+             "hv012","mieperho", "dominio", "area", "region", "hv026", "altitud", "quintil", "riqueza",
+             "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+             "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+             "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
+             "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo", "ira0a59", "eda0a59")
+
 
 baseDIT_9a12 <- baseNinosDIT %>% 
   filter(area == 1) %>% 
   filter(qi478 >= 9 & qi478 <= 12) %>% 
   select(all_of(var9a12)) %>% 
   mutate(sexo = case_when(b4 == 1 ~ 1,
-                          TRUE ~ 0),
-         #e2conv = case_when(qi478e2 == 1 ~ 1,
-                            #qi478e2 == 2 ~ 0,
-                            #TRUE ~ NA),
-         #e6conv = case_when(qi478e6 == 1 ~ 1,
-                            #qi478e6 == 2 ~ 0,
-                            #TRUE ~ NA)
-         ) %>% 
+                          TRUE ~ 0)) %>% 
   rename(edadMadre = v012)
 
 baseDIT_13a18 <- baseNinosDIT %>% 
   filter(area == 1) %>% 
-  filter(qi478 >= 13 & qi478 <= 18)
+  filter(qi478 >= 13 & qi478 <= 18) %>% 
+  select(all_of(var13a18)) %>% 
+  mutate(sexo = case_when(b4 == 1 ~ 1,
+                          TRUE ~ 0)) %>% 
+  rename(edadMadre = v012)
 
 baseDIT_19a23 <- baseNinosDIT %>% 
   filter(area == 1) %>% 
-  filter(qi478 >= 19 & qi478 <= 23)
+  filter(qi478 >= 19 & qi478 <= 23) %>% 
+  select(all_of(var19a23)) %>% 
+  mutate(sexo = case_when(b4 == 1 ~ 1,
+                          TRUE ~ 0)) %>% 
+  rename(edadMadre = v012)
 
 baseDIT_24a36 <- baseNinosDIT %>% 
   filter(area == 1) %>% 
-  filter(qi478 >= 24 & qi478 <= 36)
+  filter(qi478 >= 24 & qi478 <= 36) %>% 
+  select(all_of(var24a36)) %>% 
+  mutate(sexo = case_when(b4 == 1 ~ 1,
+                          TRUE ~ 0)) %>% 
+  rename(edadMadre = v012)
 
 baseDIT_37a54 <- baseNinosDIT %>% 
   filter(area == 1) %>% 
-  filter(qi478 >= 37 & qi478 <= 54)
+  filter(qi478 >= 37 & qi478 <= 54) %>% 
+  select(all_of(var37a54)) %>% 
+  mutate(sexo = case_when(b4 == 1 ~ 1,
+                          TRUE ~ 0)) %>% 
+  rename(edadMadre = v012)
 
 baseDIT_55a71 <- baseNinosDIT %>% 
   filter(area == 1) %>% 
-  filter(qi478 >= 55 & qi478 <= 71)
+  filter(qi478 >= 55 & qi478 <= 71) %>% 
+  select(all_of(var55a71)) %>% 
+  mutate(sexo = case_when(b4 == 1 ~ 1,
+                          TRUE ~ 0)) %>% 
+  rename(edadMadre = v012)
 
 
 # Conjunto de variables numéricas a nivel de hogar
-varNumDIT_9a12 <- c("qi478", "qi478e2", "qi478e3", "qi478e4", "qi478e5",
-                    "qi478e6", "qi478e7", "qi478e8", "qi478e9", "qi478e10", 
+varNumDIT_9a12 <- c("qi478", "qi478a", 
                     "sexo", "edadMadre", "v149", "s108n","e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
-                    "e7conv","e8conv", "e9conv","e10conv","e6f6conv",
+                    "e7conv","e8conv", "e9conv","e10conv","e6f6conv","r4_9_12m",
                     "mieperho", "hv026", "altitud", "riqueza",
                     "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
                     "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
                     "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
                     "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo",
-                   #"e2conv","e6conv"
-                    )
+                    "e1camina_solo","e2conv","e6conv")
+
+varNumDIT_13a18 <-c("qi478", "qi478a", 
+                    "sexo", "edadMadre", "v149", "s108n","f2aconv", "f2bconv", "f2cconv", "f2dconv","f2econv","f3conv", "f4conv", "f5conv", "f345", "e6f6conv",
+                    "f1camina_solo", "f2conv", "f6conv","r4_13_18m",
+                    "mieperho", "hv026", "altitud", "riqueza",
+                    "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+                    "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+                    "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
+                    "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo")
+
+varNumDIT_19a23 <-c("qi478","qi478a", 
+                    "sexo", "edadMadre", "v149", "s108n",
+                    "g1conv","g2aconv","g2bconv","g2cconv","g2abc","g3conv","g4conv","g345","r4_19_23m",
+                    "mieperho", "hv026", "altitud", "riqueza",
+                    "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+                    "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+                    "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
+                    "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo")
+varNumDIT_24a36 <-c("qi478","qi478a", 
+                     "sexo", "edadMadre", "v149", "s108n",
+                     "h1conv","h2conv","h3conv","h345","h4conv","h5conv","h6conv","h7conv","h567", "desInfJue" ,
+                     "h8aconv","h8bconv","h9conv", "h10conv","h11conv","h12conv","r4_24_36m",
+                     "mieperho", "hv026", "altitud", "riqueza",
+                     "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+                     "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+                     "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
+                     "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo")
+
+varNumDIT_37a54 <-c("qi478","qi478a", 
+                    "sexo","edadMadre","v149","s108n",
+                    "desInfEmo", "i1conv", "i2conv","i3conv","i4aconv","i4bconv","i5conv","i6conv","i7conv","i8conv",
+                    "mieperho", "hv026", "altitud", "riqueza",
+                    "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+                    "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+                    "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
+                    "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo")
+
+varNumDIT_55a71 <-c("qi478","qi478a", 
+                    "sexo","edadMadre","v149","s108n",
+                    "desInfEmo", "j1conv","j2conv","j3conv","j4aconv", "j4bconv","j5conv","j6conv","j7conv","j8conv",
+                    "mieperho", "hv026", "altitud", "riqueza",
+                    "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+                    "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+                    "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
+                    "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo")
 
 # Bases de datos a nivel de Hogares
 bPCA_9a12 <- baseDIT_9a12 %>% 
   subset(select = varNumDIT_9a12)
 
+bPCA_13a18 <- baseDIT_13a18 %>% 
+  subset(select = varNumDIT_13a18)
+
+bPCA_19a23 <- baseDIT_19a23  %>% 
+  subset(select = varNumDIT_19a23)
+
+bPCA_24a36  <- baseDIT_24a36   %>% 
+  subset(select = varNumDIT_24a36)
+
+bPCA_37a54   <- baseDIT_37a54    %>% 
+  subset(select = varNumDIT_37a54)
+
+bPCA_55a71   <- baseDIT_55a71    %>% 
+  subset(select = varNumDIT_55a71)
+
 # Missings
 missings_por_columna <- colSums(is.na(bPCA_9a12))
+missings_por_columna <- colSums(is.na(bPCA_13a18))
+missings_por_columna <- colSums(is.na(bPCA_19a23))
+missings_por_columna <- colSums(is.na(bPCA_24a36))
+missings_por_columna <- colSums(is.na(bPCA_37a54))
+missings_por_columna <- colSums(is.na(bPCA_55a71))
 
 # Crear un dataframe con la información de los missings
 df_missings <- data.frame(
@@ -131,6 +260,21 @@ df_missings <- df_missings %>% arrange(desc(missings))
 
 bPCA_9a12 <- bPCA_9a12[complete.cases(bPCA_9a12) & apply(bPCA_9a12, 1, function(x) all(is.finite(x))), ]
 bPCA_9a12 <- bPCA_9a12
+
+bPCA_13a18 <- bPCA_13a18[complete.cases(bPCA_13a18) & apply(bPCA_13a18, 1, function(x) all(is.finite(x))), ]
+bPCA_13a18 <- bPCA_13a18
+
+bPCA_19a23 <- bPCA_19a23[complete.cases(bPCA_19a23) & apply(bPCA_19a23, 1, function(x) all(is.finite(x))), ]
+bPCA_19a23 <- bPCA_19a23
+
+bPCA_24a36 <- bPCA_24a36[complete.cases(bPCA_24a36) & apply(bPCA_24a36, 1, function(x) all(is.finite(x))), ]
+bPCA_24a36 <- bPCA_24a36
+
+bPCA_37a54 <- bPCA_37a54[complete.cases(bPCA_37a54) & apply(bPCA_37a54, 1, function(x) all(is.finite(x))), ]
+bPCA_37a54 <- bPCA_37a54
+
+bPCA_55a71 <- bPCA_55a71[complete.cases(bPCA_55a71) & apply(bPCA_55a71, 1, function(x) all(is.finite(x))), ]
+bPCA_55a71 <- bPCA_55a71
 
 # 3. PCA ----
 

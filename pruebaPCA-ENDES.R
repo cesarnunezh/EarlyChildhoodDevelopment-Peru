@@ -21,6 +21,7 @@ library(ggrepel)
 library(factoextra)
 library(ROCR)
 library(haven)
+library(openxlsx)
 
 # 1. Generación de bases de datos -----
 
@@ -53,7 +54,7 @@ baseHogares <- baseHogares %>%
 
 ## 1.2. A nivel de niños -----
 
-var9a12 <-c("bord", "qi478", "qi478a", "caseid", "bidx", "id1",
+var9a12 <-c("bord", "qi478","caseid", "bidx", "id1",
             "b4", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190", "sregion",
             "s119", "s108n",
             "e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
@@ -169,24 +170,25 @@ baseDIT_55a71 <- baseNinosDIT %>%
 
 
 # Conjunto de variables numéricas a nivel de hogar
-varNumDIT_9a12 <- c("qi478", "qi478a", 
+varNumDIT_9a12 <- c("qi478", 
                     "sexo", "edadMadre", "v149", "s108n","e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
-                    "e7conv","e8conv", "e9conv","e10conv","e6f6conv","r4_9_12m",
+                    "e7conv","e8conv", "e9conv","e10conv","r4_9_12m",
                     "mieperho", "hv026", "altitud", "riqueza",
-                    "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+                    "agua", "desague", "electricidad", "radio", "tv", "refrigerador",
                     "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
                     "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
-                    "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo",
+                    "pesoNac", "pesoNacBajo", 
                     "e1camina_solo","e2conv","e6conv")
 
-varNumDIT_13a18 <-c("qi478", "qi478a", 
+
+varNumDIT_13a18 <-c("qi478",
                     "sexo", "edadMadre", "v149", "s108n","f2aconv", "f2bconv", "f2cconv", "f2dconv","f2econv","f3conv", "f4conv", "f5conv", "f345", "e6f6conv",
                     "f1camina_solo", "f2conv", "f6conv","r4_13_18m",
                     "mieperho", "hv026", "altitud", "riqueza",
-                    "agua", "tiempoAgua", "desague", "electricidad", "radio", "tv", "refrigerador",
+                    "agua", "desague", "electricidad", "radio", "tv", "refrigerador",
                     "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
                     "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
-                    "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo")
+                    "pesoNac", "pesoNacBajo")
 
 varNumDIT_19a23 <-c("qi478","qi478a", 
                     "sexo", "edadMadre", "v149", "s108n",
@@ -196,6 +198,7 @@ varNumDIT_19a23 <-c("qi478","qi478a",
                     "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
                     "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
                     "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo")
+
 varNumDIT_24a36 <-c("qi478","qi478a", 
                      "sexo", "edadMadre", "v149", "s108n",
                      "h1conv","h2conv","h3conv","h345","h4conv","h5conv","h6conv","h7conv","h567", "desInfJue" ,
@@ -206,7 +209,7 @@ varNumDIT_24a36 <-c("qi478","qi478a",
                      "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
                      "pesoNac", "tallaNac", "pesoNacBajo", "tallaNacBajo")
 
-varNumDIT_37a54 <-c("qi478","qi478a", 
+varNumDIT_37a54 <-c("qi478", 
                     "sexo","edadMadre","v149","s108n",
                     "desInfEmo", "i1conv", "i2conv","i3conv","i4aconv","i4bconv","i5conv","i6conv","i7conv","i8conv",
                     "mieperho", "hv026", "altitud", "riqueza",
@@ -259,33 +262,34 @@ df_missings <- data.frame(
 df_missings <- df_missings %>% arrange(desc(missings))
 
 bPCA_9a12 <- bPCA_9a12[complete.cases(bPCA_9a12) & apply(bPCA_9a12, 1, function(x) all(is.finite(x))), ]
-bPCA_9a12 <- bPCA_9a12
 
 bPCA_13a18 <- bPCA_13a18[complete.cases(bPCA_13a18) & apply(bPCA_13a18, 1, function(x) all(is.finite(x))), ]
-bPCA_13a18 <- bPCA_13a18
 
 bPCA_19a23 <- bPCA_19a23[complete.cases(bPCA_19a23) & apply(bPCA_19a23, 1, function(x) all(is.finite(x))), ]
-bPCA_19a23 <- bPCA_19a23
 
 bPCA_24a36 <- bPCA_24a36[complete.cases(bPCA_24a36) & apply(bPCA_24a36, 1, function(x) all(is.finite(x))), ]
-bPCA_24a36 <- bPCA_24a36
 
 bPCA_37a54 <- bPCA_37a54[complete.cases(bPCA_37a54) & apply(bPCA_37a54, 1, function(x) all(is.finite(x))), ]
-bPCA_37a54 <- bPCA_37a54
 
 bPCA_55a71 <- bPCA_55a71[complete.cases(bPCA_55a71) & apply(bPCA_55a71, 1, function(x) all(is.finite(x))), ]
-bPCA_55a71 <- bPCA_55a71
+
 
 # 3. PCA ----
+
+### De 9 a 12 meses 
+
+#### PCA con variables relacionadas a apego
 
 variables_con_desviacion_cero <- names(bPCA_9a12)[apply(bPCA_9a12, 2, sd) == 0]
 variables_con_desviacion_cero
 # variables_con_desviacion_cero: "violenciaEsposoH" "algunSeguroH" "ira0a59H"
 
 # Matriz de correlaciones
-matrixcor <- cor(bPCA_9a12)
-matrixcor
-cor.plot(matrixcor)
+matrixcor_9a12 <- cor(bPCA_9a12)
+matrixcor_9a12
+matrixcor_9a12 <- as.data.frame(matrixcor_9a12)
+write_xlsx(matrixcor_9a12, "matrixcor_9a12.xlsx")
+#cor.plot(matrixcor)
 
 # PCA
 pc1 <- prcomp(x=bPCA_9a12,scale=TRUE, center=TRUE)
@@ -314,4 +318,109 @@ ranked_variables1[1:21]
 fviz_pca_var(pc1, geom = c("arrow"))
 fviz_pca_var(pc1, geom = c("arrow", "text"))
 fviz_pca_biplot(pc1, geom = c("point"))
+
+# Realiza el PCA
+pc1 <- prcomp(x = bPCA_9a12, scale = TRUE, center = TRUE)
+
+# Abre una nueva ventana gráfica
+dev.new()
+# Realiza el biplot
+biplot(pc1, scale = 0)
+summary(pc1)
+
+# Scree graph
+fviz_eig(pc1)
+
+# Coeficiones del PCA
+loadings1 <- pc1$rotation
+loadings1
+
+# Para visualización
+loadings1t <- as.data.frame(t(loadings1))
+
+View(loadings1t[abs(loadings1t$e345) > 0.2,])#con e345
+# Análisis de alineamiento: solo componentes con peso de gasto > 0.2
+
+# Ranking de las variables más importantes del PCA
+pc1_loadings <- loadings1[, 1]
+ranked_variables1 <- names(sort(abs(pc1_loadings), decreasing = TRUE))
+ranked_variables1[1:21]
+
+# Análisis visual de los 2 componentes principales
+fviz_pca_var(pc1, geom = c("arrow"))
+fviz_pca_var(pc1, geom = c("arrow", "text"))
+fviz_pca_biplot(pc1, geom = c("point"))
+
+#########prueba grafico##########
+# Realiza el PCA
+pc1 <- prcomp(x = bPCA_9a12, scale = TRUE, center = TRUE)
+
+# Abre una nueva ventana gráfica
+dev.new()
+# Realiza el biplot
+biplot(pc1, scale = 0)
+summary(pc1)
+
+# Scree graph
+fviz_eig(pc1)
+
+# Coeficiones del PCA
+loadings1 <- pc1$rotation
+loadings1
+
+# Para visualización
+loadings1t <- as.data.frame(t(loadings1))
+
+View(loadings1t[abs(loadings1t$e345) > 0.2,])#con e345
+# Análisis de alineamiento: solo componentes con peso de gasto > 0.2
+
+# Ranking de las variables más importantes del PCA
+pc1_loadings <- loadings1[, 1]
+ranked_variables1 <- names(sort(abs(pc1_loadings), decreasing = TRUE))
+ranked_variables1[1:21]
+
+# Análisis visual de los 2 componentes principales
+fviz_pca_var(pc1, geom = c("arrow"))
+fviz_pca_var(pc1, geom = c("arrow", "text"))
+fviz_pca_biplot(pc1, geom = c("point"))
+
+
+### De 13 a 18 meses 
+
+variables_con_desviacion_cero <- names(bPCA_13a18)[apply(bPCA_13a18, 2, sd) == 0]
+variables_con_desviacion_cero
+
+# Matriz de correlaciones
+matrixcor_13a18 <- cor(bPCA_13a18)
+matrixcor_13a18
+matrixcor_13a18 <- as.data.frame(matrixcor_13a18)
+write_xlsx(matrixcor_13a18, "matrixcor_13a18.xlsx")
+
+
+# PCA
+pc2 <- prcomp(x=bPCA_13a18,scale=TRUE, center=TRUE)
+biplot(pc2, scale = 0)
+summary(pc2)
+
+# Scree graph
+fviz_eig(pc2)
+
+# Coeficiones del PCA
+loadings2<- pc2$rotation
+loadings2
+
+# Para visualización
+loadings2t <- as.data.frame(t(loadings2))
+
+View(loadings2t[abs(loadings1t$f345) > 0.2,])#con f345
+
+# Ranking de las variables más importantes del PCA
+pc2_loadings <- loadings2[, 1]
+ranked_variables2 <- names(sort(abs(pc2_loadings), decreasing = TRUE))
+ranked_variables2[1:21]
+
+# Análisis visual de los 2 componentes principales
+fviz_pca_var(pc2, geom = c("arrow"))
+fviz_pca_var(pc2, geom = c("arrow", "text"))
+fviz_pca_biplot(pc2, geom = c("point"))
 

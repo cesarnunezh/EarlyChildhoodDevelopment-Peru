@@ -597,7 +597,7 @@ baseNinosAux1ENDES <- baseNinosAux1ENDES %>%
 baseNinosAuxENDES <- baseNinosAuxENDES %>%
   mutate(e1camina_solo = case_when(qi478e1 == 5 | qi478e1 == 6 ~ 1, #SE PONE DE PIE SIN AGARRARSE DE NADA y CAMINA SOLA /O CON SOLTURA
                                    qi478e1 == 1 | qi478e1 == 2| qi478e1 == 3 | qi478e1 == 4 ~ 0,
-                              TRUE ~ NA),
+                                   TRUE ~ NA),
          e2conv = case_when(qi478e2 == 1 ~ 1,
                             qi478e2 == 2 ~ 0,
                             TRUE ~ NA),
@@ -637,9 +637,8 @@ baseNinosAuxENDES <- baseNinosAuxENDES %>%
          h9conv = case_when(qi478h9 == 1 ~ 1, 
                             qi478h9 == 2 ~ 0, 
                             TRUE ~ NA),
-         h10conv = case_when(qi478h10 == 1 ~ 1,
-                             qi478h10 == 2 ~ 2,
-                             qi478h10 == 3 ~ 3,
+         h10conv = case_when(qi478h10 == 1 ~ 1, #espera tranquilamente
+                             qi478h10 == 2 | qi478h10 == 3 ~ 0,
                              TRUE ~ NA),
          h11conv = case_when(qi478h11 == 1 ~ 1, 
                              qi478h11 == 2 ~ 2,
@@ -651,11 +650,8 @@ baseNinosAuxENDES <- baseNinosAuxENDES %>%
 
 #Variables DIT restantes de 37 - 54 meses  
 baseNinosAuxENDES <- baseNinosAuxENDES %>%
-  mutate(i1conv = case_when(qi478i1 == 1 ~ 1, # Cuando (NOMBRE) dibuja una persona ¿a cuál de estas figuras se parece más su dibujo?
-                            qi478i1 == 2 ~ 2,
-                            qi478i1 == 3 ~ 3,
-                            qi478i1 == 4 ~ 4,
-                            qi478i1 == 5 ~ 5,#agrupar como dummy de acuerdo a dibujo!!
+  mutate(i1conv = case_when(qi478i1 %in% c(3, 4, 5) ~ 1,
+                            qi478i1 %in% c(1, 2) ~ 0,
                             TRUE ~ NA),
          i2conv = case_when(qi478i2 == 1 ~ 1,
                             qi478i2 == 2 ~ 0,
@@ -672,9 +668,8 @@ baseNinosAuxENDES <- baseNinosAuxENDES %>%
          i5conv = case_when(qi478i5 == 1 ~ 1,
                             qi478i5 == 2 ~ 0,
                              TRUE ~ NA),
-         i6conv = case_when(qi478i6 == 1 ~ 1, #agrupar
-                            qi478i6 == 2 ~ 2,
-                            qi478i6 == 3 ~ 3,
+         i6conv = case_when(qi478i6 == 1 ~ 1, #espera tranquilamente
+                            qi478i6 == 2 | qi478i6 == 3 ~ 0,
                             TRUE ~ NA),
          i7conv = case_when(qi478i7 == 1 ~ 1,
                             qi478i7 == 2 ~ 0,
@@ -703,9 +698,8 @@ baseNinosAuxENDES <- baseNinosAuxENDES %>%
          j5conv = case_when(qi478j5 == 1 ~ 1,
                             qi478j5 == 2 ~ 1,
                             TRUE ~ NA),
-         j6conv = case_when(qi478j6 == 1 ~ 1, #agrupar
-                            qi478j6 == 2 ~ 2,
-                            qi478j6 == 3 ~ 3,
+         j6conv = case_when(qi478j6 == 1 ~ 1, #espera tranquilamente
+                            qi478j6 == 2 | qi478j6 == 3 ~ 0,
                             TRUE ~ NA),
          j7conv = case_when(qi478j7 == 1 ~ 1,
                             qi478j7 == 2 ~ 0,

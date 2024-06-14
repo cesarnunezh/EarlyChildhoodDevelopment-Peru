@@ -11,10 +11,10 @@
 ################################################################################
 # 0. Librerías y direcciones ----
 
-#bdEndes <- "/etc/data/endes"
-bdEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/0. Original"
-#bdTrabajo <- "/etc/data/base_trabajo"
-bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+bdEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/0. Original"
+#bdEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/0. Original"
+bdTrabajo <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
+#bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
 library(dplyr)  
 library(haven)
 
@@ -391,7 +391,7 @@ baseHogaresENDES <- baseHogaresENDES %>%
 rm(baseNinos1ENDES)
 
 
-#Desarrollo infantil - Comunicación efectiva -----
+#Desarrollo infantil --- Resultados DIT ---
 baseNinosAuxENDES <- dit %>%
   left_join(rec21 %>% select("id1", "caseid", "bidx", "b4"), by = c("id1", "caseid", "bidx")) %>%
   left_join(rec0111 %>% select("id1", "caseid", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190"), by = c("id1", "caseid")) %>%
@@ -405,6 +405,18 @@ baseNinosAuxENDES <- dit %>%
          e5conv = case_when(qi478e5 == 1 ~ 1,
                             qi478e5 == 2 ~ 0,
                             TRUE ~ NA),
+         e7conv = case_when(qi478e7 == 1 ~ 1,
+                            qi478e7 == 2 ~ 0,
+                            TRUE ~ NA),
+         e8conv = case_when(qi478e8 == 1 ~ 1,
+                            qi478e8 == 2 ~ 0,
+                            TRUE ~ NA),
+         e9conv = case_when(qi478e9 == 1 ~ 1,
+                            qi478e9 == 2 ~ 0,
+                            TRUE ~ NA),
+         e10conv = case_when(qi478e10 == 1 | qi478e10 == 3 | qi478e10 == 4 ~ 1,
+                             qi478e10 == 2 | qi478e10 == 5 ~ 0,
+                             TRUE ~ NA),
          e345 = case_when(qi478a == 0 & (qi478 >= 9 & qi478 <= 12) ~ e3conv + e4conv + e5conv,
                           TRUE ~ NA),
          r4_9_12m = case_when(e345 < 3 ~ 0,
@@ -473,18 +485,6 @@ baseNinosAuxENDES <- dit %>%
                              TRUE ~ NA),
          f2econv = case_when(qi478f2_e == 1 ~ 1,
                              qi478f2_e == 2 ~ 0,
-                             TRUE ~ NA),
-         e7conv = case_when(qi478e7 == 1 ~ 1,
-                            qi478e7 == 2 ~ 0,
-                            TRUE ~ NA),
-         e8conv = case_when(qi478e8 == 1 ~ 1,
-                            qi478e8 == 2 ~ 0,
-                            TRUE ~ NA),
-         e9conv = case_when(qi478e9 == 1 ~ 1,
-                            qi478e9 == 2 ~ 0,
-                            TRUE ~ NA),
-         e10conv = case_when(qi478e10 == 1 | qi478e10 == 3 | qi478e10 == 4 ~ 1,
-                             qi478e10 == 2 | qi478e10 == 5 ~ 0,
                              TRUE ~ NA),
          e6f6conv = case_when(qi478e6 == 1 & qi478f6 == 1 ~ 1,
                               qi478e6 == 2 | qi478f6 == 2 ~ 0,
@@ -593,6 +593,122 @@ baseNinosAux1ENDES <- baseNinosAux1ENDES %>%
                              h11 == 2 & b5 == 1 & edadM < 60 & v012 > 14 ~ 1,
                              TRUE ~ NA))
 
+#Variables DIT restantes de 9 - 12 meses 
+baseNinosAuxENDES <- baseNinosAuxENDES %>%
+  mutate(e1camina_solo = case_when(qi478e1 == 5 | qi478e1 == 6 ~ 1, #SE PONE DE PIE SIN AGARRARSE DE NADA y CAMINA SOLA /O CON SOLTURA
+                                   qi478e1 == 1 | qi478e1 == 2| qi478e1 == 3 | qi478e1 == 4 ~ 0,
+                                   TRUE ~ NA),
+         e2conv = case_when(qi478e2 == 1 ~ 1,
+                            qi478e2 == 2 ~ 0,
+                            TRUE ~ NA),
+         e6conv = case_when(qi478e6 == 1 ~ 1,
+                            qi478e6 == 2 ~ 0,
+                            TRUE ~ NA))
+
+#Variables DIT restantes de 13 - 18 meses
+baseNinosAuxENDES <- baseNinosAuxENDES %>%
+  mutate(f1camina_solo = case_when(qi478f1 == 5 | qi478f1 == 6 ~ 1,
+                                   qi478f1 == 1 | qi478f1 == 2| qi478f1 == 3 | qi478f1 == 4 ~ 0,
+                                   TRUE ~ NA),
+         f2conv = case_when(qi478e2 == 1 ~ 1,
+                            qi478e2 == 2 ~ 0,
+                            TRUE ~ NA),
+         f6conv = case_when(qi478f6 == 1 ~ 1,
+                            qi478f6 == 2 ~ 0,
+                            TRUE ~ NA))
+
+#Variables DIT restantes de 19 - 23 meses
+baseNinosAuxENDES <- baseNinosAuxENDES %>%
+  mutate(g4conv =  case_when(qi478g4 == 1  ~ 1,
+                             qi478g4 == 2 ~ 0,
+                             TRUE ~ NA)) #participa” en las conversaciones con adultos
+
+#Variables DIT restantes de 24 - 36 meses 
+baseNinosAuxENDES <- baseNinosAuxENDES %>%
+  mutate(h4conv = case_when(qi478h4 == 1 ~ 1,
+                             qi478h4 == 2 ~ 0,
+                             TRUE ~ NA),
+         h8aconv = case_when(qi478h8_a == 1 ~ 1,
+                              qi478h8_a == 2 ~ 0,
+                              TRUE ~ NA),
+         h8bconv = case_when(qi478h8_b == 1 ~ 1,
+                             qi478h8_b == 2 ~ 0,
+                             TRUE ~ NA),
+         h9conv = case_when(qi478h9 == 1 ~ 1, 
+                            qi478h9 == 2 ~ 0, 
+                            TRUE ~ NA),
+         h10conv = case_when(qi478h10 == 1 ~ 1, #espera tranquilamente
+                             qi478h10 == 2 | qi478h10 == 3 ~ 0,
+                             TRUE ~ NA),
+         h11conv = case_when(qi478h11 == 1 ~ 1, 
+                             qi478h11 == 2 ~ 2,
+                             TRUE ~ NA),
+         h12conv = case_when(qi478h12 == 1 ~ 0,#ninguna vez le ha dado un palmazo, le ha jalado de los cabellos o la oreja o le ha golpeado con un objeto en cualquier parte de su cuerpo
+                             qi478h12 == 2 | qi478h12 == 3 | qi478h12 == 4 ~ 1, #de 1 a más de 6 veces
+                             TRUE ~ NA))
+
+
+#Variables DIT restantes de 37 - 54 meses  
+baseNinosAuxENDES <- baseNinosAuxENDES %>%
+  mutate(i1conv = case_when(qi478i1 %in% c(3, 4, 5) ~ 1,
+                            qi478i1 %in% c(1, 2) ~ 0,
+                            TRUE ~ NA),
+         i2conv = case_when(qi478i2 == 1 ~ 1,
+                            qi478i2 == 2 ~ 0,
+                            TRUE ~ NA),
+         i3conv = case_when(qi478i3 == 1 ~ 1,
+                            qi478i3 == 2 ~ 0,
+                            TRUE ~ NA),
+         i4aconv = case_when(qi478i4_a == 1 ~ 1,
+                            qi478i4_a == 2 ~ 0,
+                            TRUE ~ NA),
+         i4bconv = case_when(qi478i4_b == 1 ~ 1,
+                             qi478i4_b == 2 ~ 0,
+                             TRUE ~ NA),
+         i5conv = case_when(qi478i5 == 1 ~ 1,
+                            qi478i5 == 2 ~ 0,
+                             TRUE ~ NA),
+         i6conv = case_when(qi478i6 == 1 ~ 1, #espera tranquilamente
+                            qi478i6 == 2 | qi478i6 == 3 ~ 0,
+                            TRUE ~ NA),
+         i7conv = case_when(qi478i7 == 1 ~ 1,
+                            qi478i7 == 2 ~ 0,
+                            TRUE ~ NA),
+         i8conv = case_when(qi478i8 == 1 ~ 0,#ninguna vez le ha dado un palmazo, le ha jalado de los cabellos o la oreja o le ha golpeado con un objeto en cualquier parte de su cuerpo
+                            qi478i8 == 2 | qi478i8 == 3 | qi478i8 == 4 ~ 1, #de 1 a más de 6 veces
+                            TRUE ~ NA))
+         
+#Variables DIT restantes de 55 - 71 meses
+baseNinosAuxENDES <- baseNinosAuxENDES %>%
+  mutate(j1conv = case_when(qi478j1 == 1 ~ 1,
+                            qi478j1 == 2 ~ 0,
+                            TRUE ~ NA),
+         j2conv = case_when(qi478j2 == 1 ~ 1,
+                            qi478j2 == 2 ~ 0,
+                            TRUE ~ NA),
+         j3conv = case_when(qi478j3 == 1 ~ 1,
+                            qi478j3 == 2 ~ 0,
+                            TRUE ~ NA),
+         j4aconv = case_when(qi478j4_a == 1 ~ 1,
+                             qi478j4_a == 2 ~ 0,
+                             TRUE ~ NA),
+         j4bconv = case_when(qi478j4_b == 1 ~ 1,
+                             qi478j4_b == 2 ~ 0,
+                             TRUE ~ NA), 
+         j5conv = case_when(qi478j5 == 1 ~ 1,
+                            qi478j5 == 2 ~ 1,
+                            TRUE ~ NA),
+         j6conv = case_when(qi478j6 == 1 ~ 1, #espera tranquilamente
+                            qi478j6 == 2 | qi478j6 == 3 ~ 0,
+                            TRUE ~ NA),
+         j7conv = case_when(qi478j7 == 1 ~ 1,
+                            qi478j7 == 2 ~ 0,
+                            TRUE ~ NA),
+         j8conv = case_when(qi478j8 == 1 ~ 0,#ninguna vez le ha dado un palmazo, le ha jalado de los cabellos o la oreja o le ha golpeado con un objeto en cualquier parte de su cuerpo
+                            qi478j8 == 2 | qi478j8 == 3 | qi478j8 == 4 ~ 1, #de 1 a más de 6 veces
+                            TRUE ~ NA))
+
+
 baseNinosAux1ENDES <- baseNinosAux1ENDES %>% 
   rename(bidx = midx)
 
@@ -601,7 +717,8 @@ baseNinosAuxENDES <- baseNinosAuxENDES %>%
 
 rm(baseNinosAux1ENDES, baseNinosAux2ENDES)
 
-dirBases <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+#dirBases <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+dirBases <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
 setwd(dirBases)
 write_dta(data = baseNinosAuxENDES, "baseDIT.dta")
 

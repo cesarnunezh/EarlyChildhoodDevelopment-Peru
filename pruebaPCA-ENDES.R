@@ -25,8 +25,8 @@ library(openxlsx)
 
 # 1. Generación de bases de datos -----
 
-dirEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
-#dirEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
+#dirEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+dirEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
 setwd(dirEndes)
 #baseHogares <- read_dta("baseHogaresENDES.dta")
 baseNinosDIT <- read_dta("baseDIT.dta")
@@ -57,7 +57,7 @@ baseHogares <- baseHogares %>%
 
 var9a12 <-c("bord", "qi478","caseid", "bidx", "id1",
             "b4", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190", "sregion",
-            "s119", "s108n",
+            "s119", "s108n","r2",#"desnCrOms",
             "e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
             "e7conv","e8conv", "e9conv","e10conv","e6f6conv","r4_9_12m",
             "mieperho", "dominio", "area", "region", "hv026", "altitud", "quintil", "riqueza",
@@ -173,10 +173,10 @@ baseDIT_55a71 <- baseNinosDIT %>%
 # Conjunto de variables numéricas a nivel de hogar
 varNumDIT_9a12 <- c("qi478", 
                     "sexo", "edadMadre", "v149", "s108n","e3conv", "e4conv", "e5conv", "e345", "r4_9_12m", "hv012",
-                    "e7conv","e8conv", "e9conv","e10conv","r4_9_12m",
+                    "e7conv","e8conv", "e9conv","e10conv","r4_9_12m","r2","ira0a59", "eda0a59",
                     "mieperho", "hv026", "altitud", "riqueza",
                     "agua", "desague", "electricidad", "radio", "tv", "refrigerador",
-                    "bicicleta", "moto", "carro", "pisoBajaCalidad", "paredBajaCalidad", "techoBajaCalidad",
+                    "bicicleta", "moto", "carro",
                     "hacinamiento", "mujerJH", "edadJH", "combustibleCocina", "nActivosPrioritarios",
                     "pesoNac", "pesoNacBajo", 
                     "e1camina_solo","e2conv","e6conv")
@@ -261,13 +261,16 @@ for (i in seq_along(listBases)) {
 
 ### Definición de indicadores de interés:
 
-ind9a12 <- c('e345','anemiaNinos', 'desnCrOms')
+ind9a12 <- c('e345',"r2",'anemiaNinos', 'desnCrOms')
 
 #### PCA con variables relacionadas a apego
+bPCA_9a12 <- listBases[[1]]
 
 variables_con_desviacion_cero <- names(bPCA_9a12)[apply(bPCA_9a12, 2, sd) == 0]
 variables_con_desviacion_cero
-# variables_con_desviacion_cero: "violenciaEsposoH" "algunSeguroH" "ira0a59H"
+# variables_con_desviacion_cero: "ira0a59H"
+
+##borramos variables con desviacion cero 
 
 # Matriz de correlaciones
 matrixcor_9a12 <- cor(bPCA_9a12)
@@ -356,7 +359,8 @@ loadings1
 # Para visualización
 loadings1t <- as.data.frame(t(loadings1))
 
-View(loadings1t[abs(loadings1t$e345) > 0.2,])#con e345
+View(loadings1t[abs(loadings1t$r2) > 0.2,])#con r2
+
 # Análisis de alineamiento: solo componentes con peso de gasto > 0.2
 
 # Ranking de las variables más importantes del PCA
@@ -368,6 +372,25 @@ ranked_variables1[1:21]
 fviz_pca_var(pc1, geom = c("arrow"))
 fviz_pca_var(pc1, geom = c("arrow", "text"))
 fviz_pca_biplot(pc1, geom = c("point"))
+
+###### Poner resultados del PCA en una hoja de excel #####
+
+archivo <- loadWorkbook("9a12.xlsx")
+
+nombres_hojas <- names(archivo) 
+print(nombres_hojas)
+
+#nombres hojas
+nuevos_nombres <- c("") 
+
+#guardar nombres en las hojas y exportar
+for(i in seq_along(nuevos_nombres)) {
+  names(archivo)[i] <- nuevos_nombres[i]
+}
+saveWorkbook(archivo, "9a12.xlsx", overwrite = TRUE)
+
+
+
 
 
 ### De 13 a 18 meses 
@@ -397,7 +420,7 @@ loadings2
 # Para visualización
 loadings2t <- as.data.frame(t(loadings2))
 
-View(loadings2t[abs(loadings1t$f345) > 0.2,])#con f345
+View(loadings2t[abs(loadings1t$f345) > 0.2,]) #con f345
 
 # Ranking de las variables más importantes del PCA
 pc2_loadings <- loadings2[, 1]

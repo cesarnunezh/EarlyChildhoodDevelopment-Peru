@@ -11,14 +11,14 @@
 ################################################################################
 # 0. Librerías y direcciones ----
 
-#bdEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/0. Original"
-bdEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/0. Original"
-#bdTrabajo <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
-bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+bdEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/0. Original"
+#bdEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/0. Original"
+bdTrabajo <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
+#bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
 library(dplyr)  
 library(haven)
 
-# 1. Append de bases 2015-2023 ----
+# 1. Append de bases 2019-2023 ----
 
 data19_23 <- c("dit", "rec44" ,"rec43" , "rec42", "rec41", "rec21", "re758081", "re516171",
                "re223132", "programas_sociales_x_hogar", "rec82", "rec83", "rec84dv",
@@ -419,6 +419,8 @@ baseNinosAuxENDES <- dit %>%
                              TRUE ~ NA),
          e345 = case_when(qi478a == 0 & (qi478 >= 9 & qi478 <= 12) ~ e3conv + e4conv + e5conv,
                           TRUE ~ NA),
+         r2 = case_when(qi478a == 0 & (qi478 >= 9 & qi478 <= 12) ~ e7conv + e8conv + e9conv,
+                        TRUE ~ NA),
          r4_9_12m = case_when(e345 < 3 ~ 0,
                               e345 == 3 ~ 1,
                               TRUE ~ NA),
@@ -650,11 +652,8 @@ baseNinosAuxENDES <- baseNinosAuxENDES %>%
 
 #Variables DIT restantes de 37 - 54 meses  
 baseNinosAuxENDES <- baseNinosAuxENDES %>%
-  mutate(i1conv = case_when(qi478i1 == 1 ~ 1, # Cuando (NOMBRE) dibuja una persona ¿a cuál de estas figuras se parece más su dibujo?
-                            qi478i1 == 2 ~ 2,
-                            qi478i1 == 3 ~ 3,
-                            qi478i1 == 4 ~ 4,
-                            qi478i1 == 5 ~ 5,#agrupar como dummy de acuerdo a dibujo!!
+  mutate(i1conv = case_when(qi478i1 == 1 | qi478i1 == 2 ~ 0,
+                            qi478i1 == 3 | qi478i1 == 4 | qi478i1 == 5 ~ 3,
                             TRUE ~ NA),
          i2conv = case_when(qi478i2 == 1 ~ 1,
                             qi478i2 == 2 ~ 0,
@@ -671,9 +670,8 @@ baseNinosAuxENDES <- baseNinosAuxENDES %>%
          i5conv = case_when(qi478i5 == 1 ~ 1,
                             qi478i5 == 2 ~ 0,
                              TRUE ~ NA),
-         i6conv = case_when(qi478i6 == 1 ~ 1, #agrupar
-                            qi478i6 == 2 ~ 2,
-                            qi478i6 == 3 ~ 3,
+         i6conv = case_when(qi478i6 == 1 |qi478i6 == 2 ~ 1, 
+                            qi478i6 == 3 ~ 0,
                             TRUE ~ NA),
          i7conv = case_when(qi478i7 == 1 ~ 1,
                             qi478i7 == 2 ~ 0,
@@ -700,11 +698,10 @@ baseNinosAuxENDES <- baseNinosAuxENDES %>%
                              qi478j4_b == 2 ~ 0,
                              TRUE ~ NA), 
          j5conv = case_when(qi478j5 == 1 ~ 1,
-                            qi478j5 == 2 ~ 1,
+                            qi478j5 == 2 ~ 0,
                             TRUE ~ NA),
-         j6conv = case_when(qi478j6 == 1 ~ 1, #agrupar
-                            qi478j6 == 2 ~ 2,
-                            qi478j6 == 3 ~ 3,
+         j6conv = case_when(qi478j6 == 1 | qi478j6 == 2 ~ 1, 
+                            qi478j6 == 3 ~ 0,
                             TRUE ~ NA),
          j7conv = case_when(qi478j7 == 1 ~ 1,
                             qi478j7 == 2 ~ 0,
@@ -724,8 +721,8 @@ baseNinosENDES %>% select("id1", "hhid", "hvidx", "anemiaNinos", "desnCrOms")
 
 rm(baseNinosAux1ENDES, baseNinosAux2ENDES)
 
-dirBases <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
-#dirBases <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
+#dirBases <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+dirBases <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
 setwd(dirBases)
 write_dta(data = baseNinosAuxENDES, "baseDIT.dta")
 

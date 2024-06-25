@@ -15,6 +15,7 @@ bdEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB 
 #bdEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/0. Original"
 bdTrabajo <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
 #bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+dir
 library(dplyr)  
 library(haven)
 
@@ -652,8 +653,8 @@ baseNinosAuxENDES <- baseNinosAuxENDES %>%
 
 #Variables DIT restantes de 37 - 54 meses  
 baseNinosAuxENDES <- baseNinosAuxENDES %>%
-  mutate(i1conv = case_when(qi478i1 == 1 | qi478i1 == 2 ~ 0,
-                            qi478i1 == 3 | qi478i1 == 4 | qi478i1 == 5 ~ 3,
+  mutate(i1conv = case_when(qi478i1 == 1 | qi478i1 == 2 ~ 0, ##Dibujo a detalles 
+                            qi478i1 == 3 | qi478i1 == 4 | qi478i1 == 5 ~ 1,
                             TRUE ~ NA),
          i2conv = case_when(qi478i2 == 1 ~ 1,
                             qi478i2 == 2 ~ 0,

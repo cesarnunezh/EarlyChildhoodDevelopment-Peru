@@ -66,7 +66,7 @@ for (mod in data19_23) {
 
 rm(data, df)
 
-# 2. Unión de bases a nivel de hogar y personas --------------------------------
+# 2. Unión de bases a nivel de hogar y personas ----------
 # Base hogares----
 baseHogaresENDES <- rech0 %>% 
   left_join(rech23, by = c("id1", "hhid")) %>% 
@@ -181,6 +181,7 @@ basePersonasENDES <- rech4 %>%
 baseNinosENDES <- rech6 %>%
   rename(hvidx = hc0) %>%
   left_join(basePersonasENDES, by = c("id1", "hhid", "hvidx")) %>%
+  left_join(rech23, by = c("id1", "hhid")) %>% ##para hacer el merge de quintiles de riqueza
   mutate(edad = hc1,
          edad_5 = ifelse(hc1 < 5, NA_real_, hc1),  ##edad para todos los que son mayor de 5 meses 
          peso = case_when(is.na(hc2) ~ NA_real_,
@@ -249,10 +250,28 @@ baseNinosENDES <- rech6 %>%
     output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia.png")
     ggsave(filename = output_file, plot = anemia, width = 10, height = 6, dpi = 300)
     
+### Anemia - por quintiles ### 
+    
+    ggplot(data = baseNinosENDES, aes(x = edad , y = porcentaje_anemia, color = as.factor(hv270))) + 
+      geom_point(size = 1, aes(color = as.factor(hv270)), show.legend = FALSE) +
+      geom_smooth(method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
+      geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, color = "black", show.legend = FALSE) +
+      labs(
+        title = "Prevalencia de la anemia según edad. Perú 2019-2023",
+        x = "Edad en meses",
+        y = "95% CI Prevalencia de Anemia",
+        color = "Quintil de Riqueza"
+      ) +
+      theme_minimal() +
+      geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red")   # Líneas verticales
+    scale_x_continuous(breaks = seq(5, 60, by = 5)) 
+    
+    
 ####DCI###
 
     library(ggplot2)
-    DCI<-ggplot(data = baseNinosENDES, aes(x = edad , y =  porcentaje_DCI))+ 
+    DCI<-
+      ggplot(data = baseNinosENDES, aes(x = edad , y =  porcentaje_DCI))+ 
       geom_point(size = 1, color = "black") +
       geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
       geom_errorbar(aes(ymin = lowerDCI, ymax = upperDCI), width = 0.2, color = "black") +
@@ -267,6 +286,25 @@ baseNinosENDES <- rech6 %>%
 
     output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de la DCI.png")
     ggsave(filename = output_file, plot = DCI, width = 10, height = 6, dpi = 300)
+    
+    ### DCI - por quintiles ### 
+    # Cargar librería ggplot2
+    library(ggplot2)
+    
+    # Crear el gráfico con líneas para cada quintil de riqueza
+    ggplot(data = baseNinosENDES, aes(x = edad , y = porcentaje_DCI, color = as.factor(hv270))) + 
+      geom_point(size = 1, aes(color = as.factor(hv270)), show.legend = FALSE) +
+      geom_smooth(method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
+      geom_errorbar(aes(ymin = lowerDCI, ymax = upperDCI), width = 0.2, color = "black", show.legend = FALSE) +
+      labs(
+        title = "Prevalencia de la DCI según edad y quintil de riqueza. Perú 2019-2023",
+        x = "Edad en meses",
+        y = "95% CI Prevalencia de DCI",
+        color = "Quintil de Riqueza"
+      ) +
+      theme_minimal() +
+      geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
+      scale_x_continuous(breaks = seq(5, 60, by = 5))
     
     ## Pendiente: usar factores de expansión para calcular los weighted mean 
   

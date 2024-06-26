@@ -296,8 +296,8 @@ baseNinosENDES <- rech6 %>%
     library(ggplot2)
     
     # Crear el gráfico con líneas para cada quintil de riqueza
-    #filtrando par q1 y q2
-    base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 2))
+    #filtrando par q1 y q5
+    base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
     
     ggplot(data = base_NinosEndesf, aes(x = edad , y = porcentaje_DCI, color = as.factor(hv270))) + 
       geom_point(size = 1, aes(color = as.factor(hv270)), show.legend = FALSE) +
@@ -552,6 +552,20 @@ baseNinosENDES <- rech6 %>%
   
   ####Regulación de emociones por quintiles###
       
+      base_NinosDITEndesf <- baseNinosDITENDES %>% filter(v190 %in% c(1, 5))
+      
+      ggplot(data = base_NinosDITEndesf, aes(x = qi478, y = porcentaje_emociones, color = as.factor(v190))) + 
+        geom_point(size = 1, aes(color = as.factor(v190)), show.legend = FALSE) +
+        geom_smooth(aes(group = v190), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
+        geom_errorbar(aes(ymin =lowerEMO, ymax = upperEMO), width = 0.2) + 
+        labs(
+          title = "Regulación de emociones según edad. Perú 2019-2023",
+          x = "Edad en meses",
+          y = "95% CI Regulación de emociones"
+        ) +
+        theme_minimal() +
+        geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
+        scale_x_continuous(breaks = seq(5, 60, by = 5))
       
       
 ####Apego seguro ### ##!!!!!! chequear 

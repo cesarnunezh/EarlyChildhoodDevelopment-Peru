@@ -156,7 +156,7 @@ baseHogaresENDES <- baseHogaresENDES %>%
 basePersonasENDES <- rech4 %>% 
   rename(hvidx = idxh4) %>% 
   left_join(rech1, by = c("id1", "hhid", "hvidx")) %>% 
-  #left_join(rech0, by = c( "id1", "hhid","hv005")) %>% 
+  #left_join(rech0, by = c( "id1", "hhid")) %>% ##falta para poner los pesos
   rename(estadoCivil = hv115,
          estudia = hv110) %>% 
   mutate(mujer = case_when(hv104 == 2 ~ 1,
@@ -217,7 +217,7 @@ baseNinosENDES <- rech6 %>%
          desnCrSev = case_when((hc70 < -300  & hv103 == 1) ~ 1,
                                (hc70 >= -300 & hc70 < 601 & hv103 == 1) ~ 0,
          )) %>%
-           group_by(edad) %>%
+           group_by(edad,hv270) %>% ## hv270 es índice de riqueza, donde 5 es quintil más rico y 1 más pobre
            mutate(
              porcentaje_anemia = mean(anemiaNinos, na.rm = TRUE) * 100, #porcentaje para prevalencia anemia
              porcentaje_DCI = mean(desnCrOms, na.rm = TRUE) * 100, #porcentaje prevalencia DCI
@@ -228,7 +228,7 @@ baseNinosENDES <- rech6 %>%
              upper = porcentaje_anemia + 1.96 * se,
              lowerDCI = porcentaje_DCI - 1.96 * seDCI,
              upperDCI = porcentaje_DCI + 1.96 * seDCI,
-           ) %>%
+           )
            ungroup()
   
 # Replica de graficos
@@ -250,21 +250,25 @@ baseNinosENDES <- rech6 %>%
     output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia.png")
     ggsave(filename = output_file, plot = anemia, width = 10, height = 6, dpi = 300)
     
-### Anemia - por quintiles ### 
+### Anemia - por quintiles ### usar esta forma para los demás resultados!! 
     
-    ggplot(data = baseNinosENDES, aes(x = edad , y = porcentaje_anemia, color = as.factor(hv270))) + 
-      geom_point(size = 1, aes(color = as.factor(hv270)), show.legend = FALSE) +
-      geom_smooth(method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
-      geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, color = "black", show.legend = FALSE) +
+    ggplot(data = baseNinosENDES, aes(x = edad_5, y = porcentaje_anemia, color = as.factor(hv270))) + 
+      geom_point(size = 1) +
+      geom_smooth(aes(group = hv270), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
+      geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
       labs(
-        title = "Prevalencia de la anemia según edad. Perú 2019-2023",
+        title = "Prevalencia de la anemia según edad y quintil de riqueza. Perú 2019-2023",
         x = "Edad en meses",
         y = "95% CI Prevalencia de Anemia",
         color = "Quintil de Riqueza"
       ) +
       theme_minimal() +
-      geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red")   # Líneas verticales
-    scale_x_continuous(breaks = seq(5, 60, by = 5)) 
+      geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
+      scale_x_continuous(breaks = seq(5, 60, by = 5))
+    
+    # Guardar el gráfico en un archivo
+    output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia.png")
+    ggsave(filename = output_file, plot = anemia, width = 10, height = 6, dpi = 300)
     
     
 ####DCI###
@@ -292,10 +296,13 @@ baseNinosENDES <- rech6 %>%
     library(ggplot2)
     
     # Crear el gráfico con líneas para cada quintil de riqueza
-    ggplot(data = baseNinosENDES, aes(x = edad , y = porcentaje_DCI, color = as.factor(hv270))) + 
+    #filtrando par q1 y q2
+    base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 2))
+    
+    ggplot(data = base_NinosEndesf, aes(x = edad , y = porcentaje_DCI, color = as.factor(hv270))) + 
       geom_point(size = 1, aes(color = as.factor(hv270)), show.legend = FALSE) +
-      geom_smooth(method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
-      geom_errorbar(aes(ymin = lowerDCI, ymax = upperDCI), width = 0.2, color = "black", show.legend = FALSE) +
+      geom_smooth(aes(group = hv270), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
+      geom_errorbar(aes(ymin = lowerDCI, ymax = upperDCI), width = 0.2) + 
       labs(
         title = "Prevalencia de la DCI según edad y quintil de riqueza. Perú 2019-2023",
         x = "Edad en meses",
@@ -305,16 +312,26 @@ baseNinosENDES <- rech6 %>%
       theme_minimal() +
       geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
       scale_x_continuous(breaks = seq(5, 60, by = 5))
+  
+    
+    # Guardar el gráfico en un archivo
+    output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia.png")
+    ggsave(filename = output_file, plot = anemia, width = 10, height = 6, dpi = 300)
+    
+    
+    
+    
+    
     
     ## Pendiente: usar factores de expansión para calcular los weighted mean 
   
-# Resultados DIT----
+# Resultados DIT ## ----
 ###Base DIT ### 
 ###Variables Regulación de emociones, Apego seguro, comunicación, Función simbólica, Camina solo###
 #Desarrollo infantil --- Resultados DIT ---
     baseNinosDITENDES <- dit %>%
       left_join(rec21 %>% select("id1", "caseid", "bidx", "b4"), by = c("id1", "caseid", "bidx")) %>%
-      left_join(rec0111 %>% select("id1", "caseid", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190"), by = c("id1", "caseid")) %>%
+      left_join(rec0111 %>% select("id1", "caseid", "v001", "v005", "v012", "v022", "v024", "v025", "v149", "v190"), by = c("id1", "caseid")) %>% ##v190: indice de riqueza
       left_join(rec91 %>% select("id1", "caseid", "sregion", "s119", "s108n"), by = c("id1", "caseid")) %>%
       mutate(e3conv = case_when(qi478e3 == 1 ~ 1,
                                 qi478e3 == 2 ~ 0,
@@ -479,7 +496,7 @@ baseNinosENDES <- rech6 %>%
           r4conv = case_when(e1camina_solo == 1 | f1camina_solo == 1 ~ 1,
                              e1camina_solo == 0 | f1camina_solo == 1 ~ 0,
                              TRUE ~ NA))  %>% 
-        group_by(qi478) %>%
+        group_by(qi478,v190) %>%
         mutate(
         porcentaje_emociones = mean(desInfEmo, na.rm = TRUE) * 100,
         n = n(),
@@ -531,6 +548,11 @@ baseNinosENDES <- rech6 %>%
       
       output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Regulación de emociones.png")
       ggsave(filename = output_file, plot = reg_emociones, width = 10, height = 6, dpi = 300)
+      
+  
+  ####Regulación de emociones por quintiles###
+      
+      
       
 ####Apego seguro ### ##!!!!!! chequear 
         apego <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_apego))+ 

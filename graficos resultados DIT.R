@@ -252,10 +252,11 @@ baseNinosENDES <- rech6 %>%
     
 ### Anemia - por quintiles ### usar esta forma para los demás resultados!! 
     
-    ggplot(data = baseNinosENDES, aes(x = edad_5, y = porcentaje_anemia, color = as.factor(hv270))) + 
+    base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
+    anemiaq <-ggplot(data = base_NinosEndesf, aes(x = edad_5, y = porcentaje_anemia, color = as.factor(hv270))) + 
       geom_point(size = 1) +
       geom_smooth(aes(group = hv270), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
-      geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
+      geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) + 
       labs(
         title = "Prevalencia de la anemia según edad y quintil de riqueza. Perú 2019-2023",
         x = "Edad en meses",
@@ -263,13 +264,18 @@ baseNinosENDES <- rech6 %>%
         color = "Quintil de Riqueza"
       ) +
       theme_minimal() +
+      theme(text = element_text(family = "Arial")) +  # Cambiar la fuente a Arial
       geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
-      scale_x_continuous(breaks = seq(5, 60, by = 5))
+      scale_x_continuous(breaks = seq(5, 60, by = 5)) +
+      scale_color_manual(
+        values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde agua
+                   "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo oscuro
+        labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
+      )
     
-    # Guardar el gráfico en un archivo
-    output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia.png")
-    ggsave(filename = output_file, plot = anemia, width = 10, height = 6, dpi = 300)
     
+    output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia por quintiles.png")
+    ggsave(filename = output_file, plot = anemiaq, width = 10, height = 6, dpi = 300, bg ="white")
     
 ####DCI###
 
@@ -289,40 +295,33 @@ baseNinosENDES <- rech6 %>%
     scale_x_continuous(breaks = seq(5, 60, by = 5))   
 
     output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de la DCI.png")
-    ggsave(filename = output_file, plot = DCI, width = 10, height = 6, dpi = 300)
+    ggsave(filename = output_file, plot = DCI, width = 10, height = 6, dpi = 300 )
     
     ### DCI - por quintiles ### 
-    # Cargar librería ggplot2
-    library(ggplot2)
-    
-    # Crear el gráfico con líneas para cada quintil de riqueza
-    #filtrando par q1 y q5
     base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
-    
-    ggplot(data = base_NinosEndesf, aes(x = edad , y = porcentaje_DCI, color = as.factor(hv270))) + 
-      geom_point(size = 1, aes(color = as.factor(hv270)), show.legend = FALSE) +
+    DCIq <-ggplot(data = base_NinosEndesf, aes(x = edad, y = porcentaje_DCI, color = as.factor(hv270))) + 
+      geom_point(size = 1) +
       geom_smooth(aes(group = hv270), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
       geom_errorbar(aes(ymin = lowerDCI, ymax = upperDCI), width = 0.2) + 
       labs(
-        title = "Prevalencia de la DCI según edad y quintil de riqueza. Perú 2019-2023",
+        title = "Prevalencia de desnutrición crónica infantil, según edad y quintil de riqueza. Perú 2019-2023",
         x = "Edad en meses",
         y = "95% CI Prevalencia de DCI",
         color = "Quintil de Riqueza"
       ) +
       theme_minimal() +
+      theme(text = element_text(family = "Arial")) +  
       geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
-      scale_x_continuous(breaks = seq(5, 60, by = 5))
+      scale_x_continuous(breaks = seq(5, 60, by = 5)) +
+      scale_color_manual(
+        values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                   "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+        labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
+      )
   
-    
-    # Guardar el gráfico en un archivo
-    output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia.png")
-    ggsave(filename = output_file, plot = anemia, width = 10, height = 6, dpi = 300)
-    
-    
-    
-    
-    
-    
+    output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de DCI por quintiles.png")
+    ggsave(filename = output_file, plot = DCIq, width = 10, height = 6, dpi = 300, bg ="white")
+  
     ## Pendiente: usar factores de expansión para calcular los weighted mean 
   
 # Resultados DIT ## ----
@@ -553,22 +552,30 @@ baseNinosENDES <- rech6 %>%
   ####Regulación de emociones por quintiles###
       
       base_NinosDITEndesf <- baseNinosDITENDES %>% filter(v190 %in% c(1, 5))
-      
-      ggplot(data = base_NinosDITEndesf, aes(x = qi478, y = porcentaje_emociones, color = as.factor(v190))) + 
+      emoq <- ggplot(data = base_NinosDITEndesf, aes(x = qi478, y = porcentaje_emociones, color = as.factor(v190))) + 
         geom_point(size = 1, aes(color = as.factor(v190)), show.legend = FALSE) +
         geom_smooth(aes(group = v190), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
         geom_errorbar(aes(ymin =lowerEMO, ymax = upperEMO), width = 0.2) + 
         labs(
-          title = "Regulación de emociones según edad. Perú 2019-2023",
+          title = "Regulación de emociones, según edad y quintil de riqueza. Perú 2019-2023",
           x = "Edad en meses",
-          y = "95% CI Regulación de emociones"
+          y = "95% CI Regulación de emociones",
+          color = "Quintil de Riqueza"
         ) +
         theme_minimal() +
-        geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
-        scale_x_continuous(breaks = seq(5, 60, by = 5))
+        theme(text = element_text(family = "Arial")) +  
+        geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60,66), linetype = "dashed", color = "red") +  # Líneas verticales
+        scale_x_continuous(breaks = seq(24, 71, by = 5), limits = c(24, 71)) +
+        scale_color_manual(
+          values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                     "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+          labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
+        )
+      output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Regulación de emociones por quintiles.png")
+      ggsave(filename = output_file, plot = emoq, width = 10, height = 6, dpi = 300,bg ="white")
       
-      
-####Apego seguro ### ##!!!!!! chequear 
+
+####Apego seguro ###
         apego <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_apego))+ 
         geom_point(size = 1, color = "black") +
         geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
@@ -585,6 +592,30 @@ baseNinosENDES <- rech6 %>%
         
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Precursor del apego seguro.png")
         ggsave(filename = output_file, plot = apego, width = 10, height = 6, dpi = 300)
+        
+### Apego seguro según quintiles ### 
+        apegoq <- ggplot(data = base_NinosDITEndesf, aes(x = qi478, y = porcentaje_apego, color = as.factor(v190))) + 
+          geom_point(size = 1, show.legend = FALSE) +
+          geom_smooth(aes(group = v190), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
+          geom_errorbar(aes(ymin = lowerAPE, ymax = upperAPE), width = 0.2) + 
+          labs(
+            title = "Apego seguro, según edad y quintil de riqueza. Perú 2019-2023",
+            x = "Edad en meses",
+            y = "95% CI Apego seguro",
+            color = "Quintil de Riqueza"
+          ) +
+          theme_minimal() +
+          theme(text = element_text(family = "Arial")) +  
+          geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66), linetype = "dashed", color = "red") +  # Líneas verticales
+          scale_x_continuous(breaks = seq(9, 12, by = 1)) +  # Ajustar los intervalos de los ticks en el eje x
+          coord_cartesian(xlim = c(9, 12)) +  # Ajustar el límite del eje x
+          scale_color_manual(
+            values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                       "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+            labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
+          )
+        output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Apego seguro por quintiles.png")
+        ggsave(filename = output_file, plot = apegoq, width = 10, height = 6, dpi = 300, bg ="white")
 ### Comunicación verbal efectiva ####
         
         COM <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_com))+ 
@@ -602,6 +633,32 @@ baseNinosENDES <- rech6 %>%
           coord_cartesian(xlim = c(9, 36))
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Comunicacion verbal efectiva.png")
         ggsave(filename = output_file, plot = COM, width = 10, height = 6, dpi = 300)
+
+### Comunicación verbal efectiva, por quintiles ### 
+        base_NinosDITEndesf <- baseNinosDITENDES %>% filter(v190 %in% c(1, 5))
+        comq <- ggplot(data = base_NinosDITEndesf, aes(x = qi478, y = porcentaje_com, color = as.factor(v190))) + 
+          geom_point(size = 1, aes(color = as.factor(v190)), show.legend = FALSE) +
+          geom_smooth(aes(group = v190), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
+          geom_errorbar(aes(ymin =lowerCOM, ymax = upperCOM), width = 0.2) + 
+          labs(
+            title = "Porcentaje de niñas y niños de 9 a 36 meses de edad con comunicación verbal efectiva a nivel comprensivo y expresivo apropiado para su edad. Perú 2019-2023",
+            x = "Edad en meses",
+            y = "95% CI Comunicación verbal efectiva",
+            color = "Quintil de Riqueza"
+          ) +
+          theme_minimal() +
+          theme(text = element_text(family = "Arial")) +  
+          geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60,66), linetype = "dashed", color = "red") +  # Líneas verticales
+          scale_x_continuous(breaks = seq(9, 36, by = 5), limits = c(9, 36)) +
+          scale_color_manual(
+            values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                       "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+            labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
+          )
+        output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Comunicación verbal efectiva por quintiles.png")
+        ggsave(filename = output_file, plot =  comq, width = 10, height = 6, dpi = 300,bg ="white")
+        
+        
         
 ### Función simbolica ### 
         
@@ -620,11 +677,33 @@ baseNinosENDES <- rech6 %>%
           coord_cartesian(xlim = c(24, 55))
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Función simbólica.png")
         ggsave(filename = output_file, plot = FUN, width = 10, height = 6, dpi = 300)
+      
+### Función simbólica por quintiles ### 
+        funq <- ggplot(data = base_NinosDITEndesf, aes(x = qi478, y = porcentaje_fun, color = as.factor(v190))) + 
+          geom_point(size = 1, aes(color = as.factor(v190)), show.legend = FALSE) +
+          geom_smooth(aes(group = v190), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
+          geom_errorbar(aes(ymin =lowerFUN, ymax = upperFUN), width = 0.2) + 
+          labs(
+            title = "Porcentaje de niñas y niños de 24 a 55 meses de edad que representan sus vivencias a través del juego y el dibujo. Perú 2019-2023",
+            x = "Edad en meses",
+            y = "95% CI Función simbólica",
+            color = "Quintil de Riqueza"
+          ) +
+          theme_minimal() +
+          theme(text = element_text(family = "Arial")) +  
+          geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
+          scale_x_continuous(breaks = seq(24, 55, by = 5), limits = c(24, 55)) +
+          scale_color_manual(
+            values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                       "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+            labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
+          )
+        output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Función simbólica por quintiles.png")
+        ggsave(filename = output_file, plot =  funq, width = 10, height = 6, dpi = 300,bg ="white")
         
   
 ### Marcha estable y autonoma ### 
         
-       
         CAM <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_cam))+ 
           geom_point(size = 1, color = "black") +
           geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
@@ -640,3 +719,28 @@ baseNinosENDES <- rech6 %>%
           coord_cartesian(xlim = c(9, 18))
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Marcha estable.png")
         ggsave(filename = output_file, plot =  CAM , width = 10, height = 6, dpi = 300)
+
+### Marcha estable y autonoma por quintiles ### 
+        
+        CAMq <- ggplot(data = base_NinosDITEndesf, aes(x = qi478, y = porcentaje_cam, color = as.factor(v190))) + 
+          geom_point(size = 1, aes(color = as.factor(v190)), show.legend = FALSE) +
+          geom_smooth(aes(group = v190), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
+          geom_errorbar(aes(ymin =lowerCAM, ymax = upperCAM), width = 0.2) + 
+          labs(
+            title = "Porcentaje de niños que caminan por iniciativa propia sin necesidad de detenerse para lograr el equilibrio.Perú 2019-2023",
+            x = "Edad en meses",
+            y = "95% CI Camina Solo",
+            color = "Quintil de Riqueza"
+          ) +
+          theme_minimal() +
+          theme(text = element_text(family = "Arial")) +  
+          geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
+          scale_x_continuous(breaks = seq(9, 18, by = 4), limits = c(9, 18)) +
+          scale_color_manual(
+            values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                       "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+            labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
+          )
+        output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Camina solo por quintiles.png")
+        ggsave(filename = output_file, plot =  CAMq, width = 10, height = 6, dpi = 300,bg ="white")
+        

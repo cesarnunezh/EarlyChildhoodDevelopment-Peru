@@ -268,12 +268,12 @@ baseNinosENDES <- rech6 %>%
       geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
       scale_x_continuous(breaks = seq(5, 60, by = 5)) +
       scale_color_manual(
-        values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde agua
-                   "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo oscuro
+        values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde agua
+                   "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo oscuro
         labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
       )
     
-    
+  
     output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia por quintiles.png")
     ggsave(filename = output_file, plot = anemiaq, width = 10, height = 6, dpi = 300, bg ="white")
     
@@ -301,7 +301,7 @@ baseNinosENDES <- rech6 %>%
     base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
     DCIq <-ggplot(data = base_NinosEndesf, aes(x = edad, y = porcentaje_DCI, color = as.factor(hv270))) + 
       geom_point(size = 1) +
-      geom_smooth(aes(group = hv270), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
+      geom_line(aes(group = interaction(hv270, edad)), size = 1) +  # Línea suavizada para cada quintil
       geom_errorbar(aes(ymin = lowerDCI, ymax = upperDCI), width = 0.2) + 
       labs(
         title = "Prevalencia de desnutrición crónica infantil, según edad y quintil de riqueza. Perú 2019-2023",
@@ -312,10 +312,10 @@ baseNinosENDES <- rech6 %>%
       theme_minimal() +
       theme(text = element_text(family = "Arial")) +  
       geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
-      scale_x_continuous(breaks = seq(5, 60, by = 5)) +
+      scale_x_continuous(breaks = seq(0, 60, by = 5)) +
       scale_color_manual(
-        values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
-                   "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+        values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                   "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
         labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
       )
   
@@ -493,7 +493,7 @@ baseNinosENDES <- rech6 %>%
                              desInfJue == 0 | i1conv == 0 ~ 0,
                              TRUE ~ NA),
           r4conv = case_when(e1camina_solo == 1 | f1camina_solo == 1 ~ 1,
-                             e1camina_solo == 0 | f1camina_solo == 1 ~ 0,
+                             e1camina_solo == 0 | f1camina_solo == 0 ~ 0,
                              TRUE ~ NA))  %>% 
         group_by(qi478,v190) %>%
         mutate(
@@ -524,8 +524,8 @@ baseNinosENDES <- rech6 %>%
         porcentaje_cam= mean(r4conv, na.rm = TRUE) * 100,
         n_CAM = sum(!is.na(r4conv) & qi478a == 0 & (qi478 >= 9 & qi478 <= 18)),
         seCAM = sqrt((porcentaje_cam  / 100) * (1 - (porcentaje_cam  / 100)) / n_CAM) * 100,
-        lowerCAM = porcentaje_fun  - 1.96 * seCAM,
-        upperCAM = porcentaje_fun + 1.96 * seCAM,
+        lowerCAM = porcentaje_cam  - 1.96 * seCAM,
+        upperCAM = porcentaje_cam + 1.96 * seCAM,
         
        ) %>%
   ungroup()
@@ -567,8 +567,8 @@ baseNinosENDES <- rech6 %>%
         geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60,66), linetype = "dashed", color = "red") +  # Líneas verticales
         scale_x_continuous(breaks = seq(24, 71, by = 5), limits = c(24, 71)) +
         scale_color_manual(
-          values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
-                     "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+          values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                     "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
           labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
         )
       output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Regulación de emociones por quintiles.png")
@@ -610,8 +610,8 @@ baseNinosENDES <- rech6 %>%
           scale_x_continuous(breaks = seq(9, 12, by = 1)) +  # Ajustar los intervalos de los ticks en el eje x
           coord_cartesian(xlim = c(9, 12)) +  # Ajustar el límite del eje x
           scale_color_manual(
-            values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
-                       "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+            values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                       "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
             labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
           )
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Apego seguro por quintiles.png")
@@ -737,8 +737,8 @@ baseNinosENDES <- rech6 %>%
           geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
           scale_x_continuous(breaks = seq(9, 18, by = 4), limits = c(9, 18)) +
           scale_color_manual(
-            values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
-                       "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+            values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                       "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
             labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
           )
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Camina solo por quintiles.png")

@@ -303,6 +303,7 @@ baseNinosENDES <- rech6 %>%
       geom_point(size = 1) +
       geom_line(aes(group = interaction(hv270, edad)), size = 1) +  # Línea suavizada para cada quintil
       geom_errorbar(aes(ymin = lowerDCI, ymax = upperDCI), width = 0.2) + 
+      geom_smooth(method = "loess", se = FALSE, aes(group = hv270), linetype = "solid") +  # Línea de tendencia para cada quintil
       labs(
         title = "Prevalencia de desnutrición crónica infantil, según edad y quintil de riqueza. Perú 2019-2023",
         x = "Edad en meses",
@@ -651,8 +652,8 @@ baseNinosENDES <- rech6 %>%
           geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60,66), linetype = "dashed", color = "red") +  # Líneas verticales
           scale_x_continuous(breaks = seq(9, 36, by = 5), limits = c(9, 36)) +
           scale_color_manual(
-            values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
-                       "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+            values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                       "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
             labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
           )
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Comunicación verbal efectiva por quintiles.png")
@@ -694,8 +695,8 @@ baseNinosENDES <- rech6 %>%
           geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
           scale_x_continuous(breaks = seq(24, 55, by = 5), limits = c(24, 55)) +
           scale_color_manual(
-            values = c("1" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
-                       "5" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
+            values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
+                       "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
             labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
           )
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Función simbólica por quintiles.png")

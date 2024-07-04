@@ -232,24 +232,6 @@ baseNinosENDES <- rech6 %>%
            ungroup()
   
 # Replica de graficos
-####ANEMIA###
-  library(ggplot2)
-  anemia<- ggplot(data = baseNinosENDES, aes(x = edad_5 , y = porcentaje_anemia))+ 
-    geom_point(size = 1, color = "black") +
-    geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
-    geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, color = "black") +
-    labs(
-      title = "Prevalencia de la anemia según edad. Perú 2019-2023",
-      x = "Edad en meses",
-      y = "95% CI Prevalencia de Anemia"
-    ) +
-    theme_minimal() +
-    geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red")   # Líneas verticales
-    scale_x_continuous(breaks = seq(5, 60, by = 5)) 
-    
-    output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia.png")
-    ggsave(filename = output_file, plot = anemia, width = 10, height = 6, dpi = 300)
-    
 ### Anemia - por quintiles ### usar esta forma para los demás resultados!! 
     
     base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
@@ -273,31 +255,10 @@ baseNinosENDES <- rech6 %>%
         labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
       )
     
-  
     output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia por quintiles.png")
     ggsave(filename = output_file, plot = anemiaq, width = 10, height = 6, dpi = 300, bg ="white")
     
-####DCI###
-
-    library(ggplot2)
-    DCI<-
-      ggplot(data = baseNinosENDES, aes(x = edad , y =  porcentaje_DCI))+ 
-      geom_point(size = 1, color = "black") +
-      geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
-      geom_errorbar(aes(ymin = lowerDCI, ymax = upperDCI), width = 0.2, color = "black") +
-      labs(
-        title = "Prevalencia de la DCI según edad. Perú 2019-2023",
-        x = "Edad en meses",
-        y = "95% CI Prevalencia de DCI"
-      ) +
-      theme_minimal() +
-      geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red")   # Líneas verticales
-    scale_x_continuous(breaks = seq(5, 60, by = 5))   
-
-    output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de la DCI.png")
-    ggsave(filename = output_file, plot = DCI, width = 10, height = 6, dpi = 300 )
-    
-    ### DCI - por quintiles ### 
+### DCI - por quintiles ### 
     base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
     DCIq <-ggplot(data = base_NinosEndesf, aes(x = edad, y = porcentaje_DCI, color = as.factor(hv270))) + 
       geom_point(size = 1) +
@@ -444,15 +405,15 @@ baseNinosENDES <- rech6 %>%
     baseNinosDITENDES <- baseNinosDITENDES %>%
       mutate( desInfEmo = case_when(qi478a == 0 & (qi478 >= 24 & qi478 <= 36) ~ case_when(qi478h9 == 1 ~ 0,
                                                                                           qi478h9 == 2 ~ 1,
-                                                                                          qi478h10 == 1 ~ 0,
-                                                                                          qi478h10 == 2 ~ 1,
+                                                                                          qi478h10 == 1 ~ 1,
+                                                                                          qi478h10 == 2 ~ 0,
                                                                                           qi478h10 == 3 ~ 0,
                                                                                           qi478h11 == 1 ~ 0,
                                                                                           qi478h11 == 2 ~ 1,
                                                                                           TRUE ~ NA),
                                     qi478a == 0 & (qi478 >= 37 & qi478 <= 54) ~ case_when(qi478i5 == 1 ~ 0,
                                                                                           qi478i5 == 2 ~ 1,
-                                                                                          qi478i6 == 1 ~ 0,
+                                                                                          qi478i6 == 1 ~ 1,
                                                                                           qi478i6 == 2 ~ 1,
                                                                                           qi478i6 == 3 ~ 0,
                                                                                           qi478i7 == 1 ~ 0,
@@ -460,8 +421,8 @@ baseNinosENDES <- rech6 %>%
                                                                                           TRUE ~ NA),
                                     qi478a == 0 & (qi478 >= 55 & qi478 <= 71) ~ case_when(qi478j5 == 1 ~ 0,
                                                                                           qi478j5 == 2 ~ 1,
-                                                                                          qi478j6 == 1 ~ 0,
-                                                                                          qi478j6 == 2 ~ 1,
+                                                                                          qi478j6 == 1 ~ 1,
+                                                                                          qi478j6 == 2 ~ 0,
                                                                                           qi478j6 == 3 ~ 0,
                                                                                           qi478j7 == 1 ~ 0,
                                                                                           qi478j7 == 2 ~ 1,
@@ -532,24 +493,6 @@ baseNinosENDES <- rech6 %>%
   ungroup()
 
 # Replica de graficos
-####Regulación de emociones###
-      reg_emociones <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_emociones))+ 
-        geom_point(size = 1, color = "black") +
-        geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
-        geom_errorbar(aes(ymin = lowerEMO, ymax = upperEMO ), width = 0.2, color = "black") +
-        labs(
-          title = "Regulación de emociones según edad. Perú 2019-2023",
-          x = "Edad en meses",
-          y = "95% CI Regulación de emociones"
-        ) +
-        theme_minimal() +
-        geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red")   # Líneas verticales
-      scale_x_continuous(breaks = seq(5, 60, by = 5))   
-      
-      output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Regulación de emociones.png")
-      ggsave(filename = output_file, plot = reg_emociones, width = 10, height = 6, dpi = 300)
-      
-  
   ####Regulación de emociones por quintiles###
       
       base_NinosDITEndesf <- baseNinosDITENDES %>% filter(v190 %in% c(1, 5))
@@ -576,24 +519,6 @@ baseNinosENDES <- rech6 %>%
       ggsave(filename = output_file, plot = emoq, width = 10, height = 6, dpi = 300,bg ="white")
       
 
-####Apego seguro ###
-        apego <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_apego))+ 
-        geom_point(size = 1, color = "black") +
-        geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
-        geom_errorbar(aes(ymin = lowerAPE, ymax =upperAPE ), width = 0.2, color = "black") +
-        labs(
-          title = "Apego seguro según edad. Perú 2019-2023",
-          x = "Edad en meses",
-          y = "95% CI Apego seguro"
-        ) +
-        theme_minimal() +
-        geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
-        scale_x_continuous(breaks = seq(9, 12, by = 1)) +  # Ajustar los intervalos de los ticks en el eje x
-        coord_cartesian(xlim = c(9, 12))
-        
-        output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Precursor del apego seguro.png")
-        ggsave(filename = output_file, plot = apego, width = 10, height = 6, dpi = 300)
-        
 ### Apego seguro según quintiles ### 
         apegoq <- ggplot(data = base_NinosDITEndesf, aes(x = qi478, y = porcentaje_apego, color = as.factor(v190))) + 
           geom_point(size = 1, show.legend = FALSE) +
@@ -617,23 +542,6 @@ baseNinosENDES <- rech6 %>%
           )
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Apego seguro por quintiles.png")
         ggsave(filename = output_file, plot = apegoq, width = 10, height = 6, dpi = 300, bg ="white")
-### Comunicación verbal efectiva ####
-        
-        COM <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_com))+ 
-          geom_point(size = 1, color = "black") +
-          geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
-          geom_errorbar(aes(ymin = lowerCOM, ymax =upperCOM ), width = 0.2, color = "black") +
-          labs(
-            title = "Porcentaje de niñas y niños de 9 a 36 meses de edad con comunicación verbal efectiva a nivel comprensivo y expresivo apropiado para su edad. Perú 2019-2023",
-            x = "Edad en meses",
-            y = "95% CI Comunicación verbal efectiva"
-          ) +
-          theme_minimal() +
-          geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
-          scale_x_continuous(breaks = seq(9, 36, by = 5)) +  # Ajustar los intervalos de los ticks en el eje x
-          coord_cartesian(xlim = c(9, 36))
-        output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Comunicacion verbal efectiva.png")
-        ggsave(filename = output_file, plot = COM, width = 10, height = 6, dpi = 300)
 
 ### Comunicación verbal efectiva, por quintiles ### 
         base_NinosDITEndesf <- baseNinosDITENDES %>% filter(v190 %in% c(1, 5))
@@ -659,25 +567,6 @@ baseNinosENDES <- rech6 %>%
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Comunicación verbal efectiva por quintiles.png")
         ggsave(filename = output_file, plot =  comq, width = 10, height = 6, dpi = 300,bg ="white")
         
-        
-        
-### Función simbolica ### 
-        
-        FUN <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_fun))+ 
-          geom_point(size = 1, color = "black") +
-          geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
-          geom_errorbar(aes(ymin = lowerFUN, ymax =upperFUN ), width = 0.2, color = "black") +
-          labs(
-            title = "Porcentaje de niñas y niños de 24 a 55 meses de edad que representan sus vivencias a través del juego y el dibujo. Perú 2019-2023",
-            x = "Edad en meses",
-            y = "95% CI Función simbólica"
-          ) +
-          theme_minimal() +
-          geom_vline(xintercept = c(24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
-          scale_x_continuous(breaks = seq(24, 55, by = 5)) +  # Ajustar los intervalos de los ticks en el eje x
-          coord_cartesian(xlim = c(24, 55))
-        output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Función simbólica.png")
-        ggsave(filename = output_file, plot = FUN, width = 10, height = 6, dpi = 300)
       
 ### Función simbólica por quintiles ### 
         funq <- ggplot(data = base_NinosDITEndesf, aes(x = qi478, y = porcentaje_fun, color = as.factor(v190))) + 
@@ -702,24 +591,7 @@ baseNinosENDES <- rech6 %>%
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Función simbólica por quintiles.png")
         ggsave(filename = output_file, plot =  funq, width = 10, height = 6, dpi = 300,bg ="white")
         
-  
-### Marcha estable y autonoma ### 
-        
-        CAM <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_cam))+ 
-          geom_point(size = 1, color = "black") +
-          geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
-          geom_errorbar(aes(ymin = lowerCAM , ymax = upperCAM), width = 0.2, color = "black") +
-          labs(
-            title = "Camina solo. Perú 2019-2023",
-            x = "Edad en meses",
-            y = "95% CI Marcha estable y autonóma"
-          ) +
-          theme_minimal() +
-          geom_vline(xintercept = c(24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
-          scale_x_continuous(breaks = seq(9, 18, by = 5)) +  # Ajustar los intervalos de los ticks en el eje x
-          coord_cartesian(xlim = c(9, 18))
-        output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Marcha estable.png")
-        ggsave(filename = output_file, plot =  CAM , width = 10, height = 6, dpi = 300)
+
 
 ### Marcha estable y autonoma por quintiles ### 
         

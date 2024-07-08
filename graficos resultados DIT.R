@@ -590,8 +590,7 @@ baseNinosENDES <- rech6 %>%
           )
         output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Función simbólica por quintiles.png")
         ggsave(filename = output_file, plot =  funq, width = 10, height = 6, dpi = 300,bg ="white")
-        
-
+      
 
 ### Marcha estable y autonoma por quintiles ### 
         

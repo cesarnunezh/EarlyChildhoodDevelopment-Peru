@@ -10,11 +10,12 @@
 
 ################################################################################
 # 0. Librerías y direcciones ----
-bdEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/0. Original"
-#bdEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/0. Original"
-bdTrabajo <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
-#bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+#bdEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/0. Original"
+bdEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/0. Original"
+#bdTrabajo <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
+bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
 dirOutput <-"C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output"
+dirOutput <-"C:/Users/User/Documents/GitHub/PDB-DIT/Output"
 library(dplyr)  
 library(haven)
 library(ggplot2)
@@ -156,7 +157,7 @@ baseHogaresENDES <- baseHogaresENDES %>%
 basePersonasENDES <- rech4 %>% 
   rename(hvidx = idxh4) %>% 
   left_join(rech1, by = c("id1", "hhid", "hvidx")) %>% 
-  #left_join(rech0, by = c( "id1", "hhid")) %>% ##falta para poner los pesos
+  left_join(rech0, by = c( "id1", "hhid")) %>% ##falta para poner los pesos
   rename(estadoCivil = hv115,
          estudia = hv110) %>% 
   mutate(mujer = case_when(hv104 == 2 ~ 1,
@@ -174,7 +175,8 @@ basePersonasENDES <- rech4 %>%
          algunSeguro = case_when(sh11a ==1 | sh11b ==1 | sh11c ==1 | sh11d ==1 | sh11e ~ 1,
                                  TRUE ~ 0),
          pea = case_when(sh13 == 1 | sh13 == 2 | sh13 == 3 | sh13 == 4 | sh13 == 5 ~ 1,
-                         TRUE ~ 0))
+                         TRUE ~ 0),
+         pesoP = hv005/1000000)
 
 ### Base Niños - creación de variables ###
 
@@ -215,23 +217,44 @@ baseNinosENDES <- rech6 %>%
                                (hc70 >= -200 & hc70 < 601 & hv103 == 1) ~ 0,
                                TRUE ~ NA_integer_),
          desnCrSev = case_when((hc70 < -300  & hv103 == 1) ~ 1,
-                               (hc70 >= -300 & hc70 < 601 & hv103 == 1) ~ 0,
-         )) %>%
-           group_by(edad,hv270) %>% ## hv270 es índice de riqueza, donde 5 es quintil más rico y 1 más pobre
-           mutate(
-             porcentaje_anemia = mean(anemiaNinos, na.rm = TRUE) * 100, #porcentaje para prevalencia anemia
-             porcentaje_DCI = mean(desnCrOms, na.rm = TRUE) * 100, #porcentaje prevalencia DCI
-             n = n(),  
-             se = sqrt((porcentaje_anemia / 100) * (1 - (porcentaje_anemia / 100)) / n) * 100,
-             seDCI = sqrt((porcentaje_DCI / 100) * (1 - (porcentaje_DCI / 100)) / n) * 100,
-             lower = porcentaje_anemia - 1.96 * se,
-             upper = porcentaje_anemia + 1.96 * se,
-             lowerDCI = porcentaje_DCI - 1.96 * seDCI,
-             upperDCI = porcentaje_DCI + 1.96 * seDCI,
-           )
-           ungroup()
-  
+                               (hc70 >= -300 & hc70 < 601 & hv103 == 1) ~ 0)) %>%
+  group_by(edad,edad_5,hv270) %>% ## hv270 es índice de riqueza, donde 5 es quintil más rico y 1 más pobre
+  summarize(porcentaje_anemia = weighted.mean(anemiaNinos, w = pesoP, na.rm = TRUE) * 100, #porcentaje para prevalencia anemia
+         porcentaje_DCI = mean(desnCrOms, w = pesoP, na.rm = TRUE) * 100, #porcentaje prevalencia DCI
+         n = n(),
+         se = sqrt(weighted.mean(anemiaNinos, w = pesoP, na.rm = TRUE) * 
+                     (1 - weighted.mean(anemiaNinos, w = pesoP, na.rm = TRUE)) / n()) * 100,
+         seDCI = sqrt(weighted.mean(desnCrOms, w = pesoP, na.rm = TRUE) * 
+                        (1 - weighted.mean(desnCrOms, w = pesoP, na.rm = TRUE)) / n()) * 100,
+         .groups = 'drop') %>%
+  mutate(lower = porcentaje_anemia - 1.96 * se,
+         upper = porcentaje_anemia + 1.96 * se,
+         lowerDCI = porcentaje_DCI - 1.96 * seDCI,
+         upperDCI = porcentaje_DCI + 1.96 * seDCI)
+
+
 # Replica de graficos
+<<<<<<< Updated upstream
+=======
+####ANEMIA###
+  library(ggplot2)
+  anemia<- ggplot(data = baseNinosENDES, aes(x = edad_5 , y = porcentaje_anemia))+ 
+    geom_point(size = 1, color = "black") +
+    geom_smooth(method = "loess", se = FALSE, color = "red", linewidth = 1) +  # Línea suavizada
+    geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, color = "black") +
+    labs(
+      title = "Prevalencia de la anemia según edad. Perú 2019-2023",
+      x = "Edad en meses",
+      y = "95% CI Prevalencia de Anemia"
+    ) +
+    theme_minimal() +
+    geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
+    scale_x_continuous(breaks = seq(5, 60, by = 5)) 
+    
+    output_file <- file.path(dirOutput, "Prevalencia de anemia.png")
+    ggsave(filename = output_file, plot = anemia, width = 10, height = 6, dpi = 300)
+    
+>>>>>>> Stashed changes
 ### Anemia - por quintiles ### usar esta forma para los demás resultados!! 
     
     base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
@@ -255,10 +278,38 @@ baseNinosENDES <- rech6 %>%
         labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
       )
     
+<<<<<<< Updated upstream
     output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia por quintiles.png")
     ggsave(filename = output_file, plot = anemiaq, width = 10, height = 6, dpi = 300, bg ="white")
     
 ### DCI - por quintiles ### 
+=======
+  
+    output_file <- file.path(dirOutput, "Prevalencia de anemia por quintiles.png")
+    ggsave(filename = output_file, plot = anemiaq, width = 10, height = 6, dpi = 300, bg ="white")
+    
+####DCI###
+
+    library(ggplot2)
+    DCI<-
+      ggplot(data = baseNinosENDES, aes(x = edad , y =  porcentaje_DCI))+ 
+      geom_point(size = 1, color = "black") +
+      geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
+      geom_errorbar(aes(ymin = lowerDCI, ymax = upperDCI), width = 0.2, color = "black") +
+      labs(
+        title = "Prevalencia de la DCI según edad. Perú 2019-2023",
+        x = "Edad en meses",
+        y = "95% CI Prevalencia de DCI"
+      ) +
+      theme_minimal() +
+      geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red")   # Líneas verticales
+    scale_x_continuous(breaks = seq(5, 60, by = 5))   
+
+    output_file <- file.path(dirOutput, "Prevalencia de la DCI.png")
+    ggsave(filename = output_file, plot = DCI, width = 10, height = 6, dpi = 300 )
+    
+    ### DCI - por quintiles ### 
+>>>>>>> Stashed changes
     base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
     DCIq <-ggplot(data = base_NinosEndesf, aes(x = edad, y = porcentaje_DCI, color = as.factor(hv270))) + 
       geom_point(size = 1) +
@@ -281,7 +332,7 @@ baseNinosENDES <- rech6 %>%
         labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
       )
   
-    output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de DCI por quintiles.png")
+    output_file <- file.path(dirOutput, "Prevalencia de DCI por quintiles.png")
     ggsave(filename = output_file, plot = DCIq, width = 10, height = 6, dpi = 300, bg ="white")
   
     ## Pendiente: usar factores de expansión para calcular los weighted mean 
@@ -403,7 +454,7 @@ baseNinosENDES <- rech6 %>%
     
     ##Calculo de variables
     baseNinosDITENDES <- baseNinosDITENDES %>%
-      mutate( desInfEmo = case_when(qi478a == 0 & (qi478 >= 24 & qi478 <= 36) ~ case_when(qi478h9 == 1 ~ 0,
+      mutate(desInfEmo = case_when(qi478a == 0 & (qi478 >= 24 & qi478 <= 36) ~ case_when(qi478h9 == 1 ~ 0,
                                                                                           qi478h9 == 2 ~ 1,
                                                                                           qi478h10 == 1 ~ 1,
                                                                                           qi478h10 == 2 ~ 0,
@@ -427,72 +478,95 @@ baseNinosENDES <- rech6 %>%
                                                                                           qi478j7 == 1 ~ 0,
                                                                                           qi478j7 == 2 ~ 1,
                                                                                           TRUE ~ NA),
-          TRUE ~ NA),
-          r2conv = case_when(r2 == 0  ~ 0,## convetir a dummy variables categoricas de apego seguro 
-                             r2 == 1 | r2 == 2 | r2 == 3 ~ 1,
-                             TRUE ~ NA),
-          r5conv = case_when(r4_9_12m == 1 | r4_13_18m == 1 | r4_19_23m == 1 | r4_24_36m == 1 ~ 1,
-                             r4_9_12m == 0 | r4_13_18m == 0 | r4_19_23m == 0 | r4_24_36m == 0 ~ 0,
-                             TRUE ~ NA),
-          h5conv = case_when(qi478h5 == 1 ~ 1,
-                             qi478h5 == 2 ~ 0,
-                             TRUE ~ NA),
-          h6conv = case_when(qi478h6 == 1 ~ 1,
-                             qi478h6 == 2 ~ 0,
-                             TRUE ~ NA),
-          h7conv = case_when(qi478h7 == 1 ~ 1,
-                             qi478h7 == 2 ~ 0,
-                             TRUE ~ NA),
-          h567 = case_when(qi478a == 0 & (qi478 >= 24 & qi478 <= 36) ~ h5conv + h6conv + h7conv,
-                           TRUE ~ NA),
-          desInfJue = case_when(h567 %in% 0:2 ~ 0,
-                                h567 == 3 ~ 1,
+                                    TRUE ~ NA),
+             r2conv = case_when(r2 == 0  ~ 0,## convetir a dummy variables categoricas de apego seguro
+                                r2 == 1 | r2 == 2 | r2 == 3 ~ 1,
                                 TRUE ~ NA),
-          i1conv = case_when(qi478i1 == 1 | qi478i1 == 2 | qi478i1 == 3 | qi478i1 == 4  ~ 0, ##Dibujo a detalles 
-                             qi478i1 == 5 ~ 1,
-                             TRUE ~ NA),
-          r7conv = case_when(desInfJue == 1 | i1conv == 1 ~ 1,
-                             desInfJue == 0 | i1conv == 0 ~ 0,
-                             TRUE ~ NA),
-          r4conv = case_when(e1camina_solo == 1 | f1camina_solo == 1 ~ 1,
-                             e1camina_solo == 0 | f1camina_solo == 0 ~ 0,
-                             TRUE ~ NA))  %>% 
-        group_by(qi478,v190) %>%
-        mutate(
-        porcentaje_emociones = mean(desInfEmo, na.rm = TRUE) * 100,
-        n = n(),
-        seEMO = sqrt((porcentaje_emociones / 100) * (1 - (porcentaje_emociones / 100)) / n) * 100,
-        lowerEMO = porcentaje_emociones - 1.96 * seEMO,
-        upperEMO = porcentaje_emociones + 1.96 * seEMO,
+             r5conv = case_when(r4_9_12m == 1 | r4_13_18m == 1 | r4_19_23m == 1 | r4_24_36m == 1 ~ 1,
+                                r4_9_12m == 0 | r4_13_18m == 0 | r4_19_23m == 0 | r4_24_36m == 0 ~ 0,
+                                TRUE ~ NA),
+             h5conv = case_when(qi478h5 == 1 ~ 1,
+                                qi478h5 == 2 ~ 0,
+                                TRUE ~ NA),
+             h6conv = case_when(qi478h6 == 1 ~ 1,
+                                qi478h6 == 2 ~ 0,
+                                TRUE ~ NA),
+             h7conv = case_when(qi478h7 == 1 ~ 1,
+                                qi478h7 == 2 ~ 0,
+                                TRUE ~ NA),
+             h567 = case_when(qi478a == 0 & (qi478 >= 24 & qi478 <= 36) ~ h5conv + h6conv + h7conv,
+                              TRUE ~ NA),
+             desInfJue = case_when(h567 %in% 0:2 ~ 0,
+                                   h567 == 3 ~ 1,
+                                   TRUE ~ NA),
+             i1conv = case_when(qi478i1 == 1 | qi478i1 == 2 | qi478i1 == 3 | qi478i1 == 4  ~ 0, ##Dibujo a detalles
+                                qi478i1 == 5 ~ 1,
+                                TRUE ~ NA),
+             r7conv = case_when(desInfJue == 1 | i1conv == 1 ~ 1,
+                                desInfJue == 0 | i1conv == 0 ~ 0,
+                                TRUE ~ NA),
+             r4conv = case_when(e1camina_solo == 1 | f1camina_solo == 1 ~ 1,
+                                e1camina_solo == 0 | f1camina_solo == 0 ~ 0,
+                                TRUE ~ NA),
+             pesoP = v005/1000000)  %>%
+      group_by(qi478,v190) %>%
+      summarize(porcentaje_emociones = weighted.mean(desInfEmo, w = pesoP, na.rm = TRUE) * 100, #porcentaje para prevalencia anemia
+                porcentaje_apego = weighted.mean(r2conv, w = pesoP, na.rm = TRUE) * 100, #porcentaje prevalencia DCI
+                porcentaje_com = weighted.mean(r5conv, w = pesoP, na.rm = TRUE) * 100,
+                porcentaje_fun= weighted.mean(r7conv, w = pesoP, na.rm = TRUE) * 100,
+                porcentaje_cam= weighted.mean(r4conv, w = pesoP, na.rm = TRUE) * 100,
+                n = n(),
+                n_apego = sum(!is.na(r2conv) & qi478a == 0 & (qi478 >= 9 & qi478 <= 12)),
+                n_COM = sum(!is.na(r5conv) & qi478a == 0 & (qi478 >= 9 & qi478 <= 36)),
+                n_FUN = sum(!is.na(r7conv) & qi478a == 0 & (qi478 >= 24 & qi478 <= 55)),
+                n_CAM = sum(!is.na(r4conv) & qi478a == 0 & (qi478 >= 9 & qi478 <= 18)),
+                seEMO = sqrt(weighted.mean(desInfEmo, w = pesoP, na.rm = TRUE) * 
+                            (1 - weighted.mean(desInfEmo, w = pesoP, na.rm = TRUE)) / n()) * 100,
+                seAPE = sqrt(weighted.mean(r2conv, w = pesoP, na.rm = TRUE) * 
+                               (1 - weighted.mean(r2conv, w = pesoP, na.rm = TRUE)) / n()) * 100,
+                seCOM = sqrt(weighted.mean(r5conv, w = pesoP, na.rm = TRUE) * 
+                               (1 - weighted.mean(r5conv, w = pesoP, na.rm = TRUE)) / n()) * 100,
+                seFUN = sqrt(weighted.mean(r7conv, w = pesoP, na.rm = TRUE) * 
+                               (1 - weighted.mean(r7conv, w = pesoP, na.rm = TRUE)) / n()) * 100,
+                seCAM = sqrt(weighted.mean(r4conv, w = pesoP, na.rm = TRUE) * 
+                               (1 - weighted.mean(r4conv, w = pesoP, na.rm = TRUE)) / n()) * 100,
+                .groups = 'drop') %>%
+      mutate(lowerEMO = porcentaje_emociones - 1.96 * seEMO,
+             upperEMO = porcentaje_emociones + 1.96 * seEMO,
+             lowerAPE = porcentaje_apego - 1.96 * seAPE,
+             upperAPE = porcentaje_apego + 1.96 * seAPE,
+             lowerCOM = porcentaje_com  - 1.96 * seCOM,
+             upperCOM = porcentaje_com + 1.96 * seCOM,
+             lowerFUN = porcentaje_fun  - 1.96 * seFUN,
+             upperFUN = porcentaje_fun + 1.96 * seFUN,
+             lowerCAM = porcentaje_cam  - 1.96 * seCAM,
+             upperCAM = porcentaje_cam + 1.96 * seCAM) %>%
+      ungroup()
+    
         
-        porcentaje_apego = mean(r2conv, na.rm = TRUE) * 100,
-        n_apego = sum(!is.na(r2conv) & qi478a == 0 & (qi478 >= 9 & qi478 <= 12)),
-        seAPE = sqrt((porcentaje_apego / 100) * (1 - (porcentaje_apego / 100)) / n_apego) * 100,
-        lowerAPE = porcentaje_apego - 1.96 * seAPE,
-        upperAPE = porcentaje_apego + 1.96 * seAPE,
-        
-        porcentaje_com = mean(r5conv, na.rm = TRUE) * 100,
-        n_COM = sum(!is.na(r5conv) & qi478a == 0 & (qi478 >= 9 & qi478 <= 36)),
-        seCOM = sqrt((porcentaje_com  / 100) * (1 - (porcentaje_com  / 100)) / n_COM) * 100,
-        lowerCOM = porcentaje_com  - 1.96 * seCOM,
-        upperCOM = porcentaje_com + 1.96 * seCOM,
-        
-        porcentaje_fun= mean(r7conv, na.rm = TRUE) * 100,
-        n_FUN = sum(!is.na(r7conv) & qi478a == 0 & (qi478 >= 24 & qi478 <= 55)),
-        seFUN = sqrt((porcentaje_fun  / 100) * (1 - (porcentaje_fun  / 100)) / n_FUN) * 100,
-        lowerFUN = porcentaje_fun  - 1.96 * seFUN,
-        upperFUN = porcentaje_fun + 1.96 * seFUN,
-        
-        porcentaje_cam= mean(r4conv, na.rm = TRUE) * 100,
-        n_CAM = sum(!is.na(r4conv) & qi478a == 0 & (qi478 >= 9 & qi478 <= 18)),
-        seCAM = sqrt((porcentaje_cam  / 100) * (1 - (porcentaje_cam  / 100)) / n_CAM) * 100,
-        lowerCAM = porcentaje_cam  - 1.96 * seCAM,
-        upperCAM = porcentaje_cam + 1.96 * seCAM,
-        
-       ) %>%
-  ungroup()
 
 # Replica de graficos
+<<<<<<< Updated upstream
+=======
+####Regulación de emociones###
+      reg_emociones <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_emociones))+ 
+        geom_point(size = 1, color = "black") +
+        geom_smooth(method = "loess", se = FALSE, color = "red", size = 1) +  # Línea suavizada
+        geom_errorbar(aes(ymin = lowerEMO, ymax = upperEMO ), width = 0.2, color = "black") +
+        labs(
+          title = "Regulación de emociones según edad. Perú 2019-2023",
+          x = "Edad en meses",
+          y = "95% CI Regulación de emociones"
+        ) +
+        theme_minimal() +
+        geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
+      scale_x_continuous(breaks = seq(5, 60, by = 5))   
+      
+      output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Regulación de emociones.png")
+      ggsave(filename = output_file, plot = reg_emociones, width = 10, height = 6, dpi = 300)
+      
+  
+>>>>>>> Stashed changes
   ####Regulación de emociones por quintiles###
       
       base_NinosDITEndesf <- baseNinosDITENDES %>% filter(v190 %in% c(1, 5))

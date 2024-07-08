@@ -234,8 +234,6 @@ baseNinosENDES <- rech6 %>%
 
 
 # Replica de graficos
-<<<<<<< Updated upstream
-=======
 ####ANEMIA###
   library(ggplot2)
   anemia<- ggplot(data = baseNinosENDES, aes(x = edad_5 , y = porcentaje_anemia))+ 
@@ -254,7 +252,6 @@ baseNinosENDES <- rech6 %>%
     output_file <- file.path(dirOutput, "Prevalencia de anemia.png")
     ggsave(filename = output_file, plot = anemia, width = 10, height = 6, dpi = 300)
     
->>>>>>> Stashed changes
 ### Anemia - por quintiles ### usar esta forma para los demás resultados!! 
     
     base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
@@ -278,13 +275,6 @@ baseNinosENDES <- rech6 %>%
         labels = c("1" = "Quintil Inferior", "5" = "Quintil Superior")
       )
     
-<<<<<<< Updated upstream
-    output_file <- file.path("C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output", "Prevalencia de anemia por quintiles.png")
-    ggsave(filename = output_file, plot = anemiaq, width = 10, height = 6, dpi = 300, bg ="white")
-    
-### DCI - por quintiles ### 
-=======
-  
     output_file <- file.path(dirOutput, "Prevalencia de anemia por quintiles.png")
     ggsave(filename = output_file, plot = anemiaq, width = 10, height = 6, dpi = 300, bg ="white")
     
@@ -309,7 +299,6 @@ baseNinosENDES <- rech6 %>%
     ggsave(filename = output_file, plot = DCI, width = 10, height = 6, dpi = 300 )
     
     ### DCI - por quintiles ### 
->>>>>>> Stashed changes
     base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
     DCIq <-ggplot(data = base_NinosEndesf, aes(x = edad, y = porcentaje_DCI, color = as.factor(hv270))) + 
       geom_point(size = 1) +
@@ -546,8 +535,6 @@ baseNinosENDES <- rech6 %>%
         
 
 # Replica de graficos
-<<<<<<< Updated upstream
-=======
 ####Regulación de emociones###
       reg_emociones <- ggplot(data = baseNinosDITENDES, aes(x = qi478, y = porcentaje_emociones))+ 
         geom_point(size = 1, color = "black") +
@@ -566,7 +553,6 @@ baseNinosENDES <- rech6 %>%
       ggsave(filename = output_file, plot = reg_emociones, width = 10, height = 6, dpi = 300)
       
   
->>>>>>> Stashed changes
   ####Regulación de emociones por quintiles###
       
       base_NinosDITEndesf <- baseNinosDITENDES %>% filter(v190 %in% c(1, 5))

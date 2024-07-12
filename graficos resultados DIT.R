@@ -10,12 +10,12 @@
 
 ################################################################################
 # 0. Librerías y direcciones ----
-#bdEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/0. Original"
-bdEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/0. Original"
-#bdTrabajo <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
-bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
+bdEndes <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/0. Original"
+#bdEndes <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/0. Original"
+bdTrabajo <- "C:/Users/Jennifer Prado/OneDrive - VIDENZA/Proyectos activos/1. PDB - DIT/2. Data/ENDES/1. Bases"
+#bdTrabajo <- "C:/Users/User/OneDrive - MIGRACIÓN VIDENZA/1. Proyectos/1. Proyectos actuales/23. Artículos PDB/1. PDB - DIT/2. Data/ENDES/1. Bases"
 dirOutput <-"C:/Users/Jennifer Prado/Documents/GitHub/PDB-DIT/Output"
-dirOutput <-"C:/Users/User/Documents/GitHub/PDB-DIT/Output"
+#dirOutput <-"C:/Users/User/Documents/GitHub/PDB-DIT/Output"
 library(dplyr)  
 library(haven)
 library(ggplot2)
@@ -186,6 +186,7 @@ baseNinosENDES <- rech6 %>%
   left_join(rech23, by = c("id1", "hhid")) %>% ##para hacer el merge de quintiles de riqueza
   mutate(edad = hc1,
          edad_5 = ifelse(hc1 < 5, NA_real_, hc1),  ##edad para todos los que son mayor de 5 meses 
+         edad_6 = ifelse(hc1 < 6, NA_real_, hc1),  ##edad para todos los que son mayor de 6 meses 
          peso = case_when(is.na(hc2) ~ NA_real_,
                           TRUE ~ hc2),
          talla = case_when(is.na(hc3) ~ NA_real_,
@@ -218,7 +219,7 @@ baseNinosENDES <- rech6 %>%
                                TRUE ~ NA_integer_),
          desnCrSev = case_when((hc70 < -300  & hv103 == 1) ~ 1,
                                (hc70 >= -300 & hc70 < 601 & hv103 == 1) ~ 0)) %>%
-  group_by(edad,edad_5,hv270) %>% ## hv270 es índice de riqueza, donde 5 es quintil más rico y 1 más pobre
+  group_by(edad,edad_5,edad_6,hv270) %>% ## hv270 es índice de riqueza, donde 5 es quintil más rico y 1 más pobre
   summarize(porcentaje_anemia = weighted.mean(anemiaNinos, w = pesoP, na.rm = TRUE) * 100, #porcentaje para prevalencia anemia
          porcentaje_DCI = mean(desnCrOms, w = pesoP, na.rm = TRUE) * 100, #porcentaje prevalencia DCI
          n = n(),
@@ -236,7 +237,7 @@ baseNinosENDES <- rech6 %>%
 # Replica de graficos
 ####ANEMIA###
   library(ggplot2)
-  anemia<- ggplot(data = baseNinosENDES, aes(x = edad_5 , y = porcentaje_anemia))+ 
+  anemia<- ggplot(data = baseNinosENDES, aes(x = edad , y = porcentaje_anemia))+ 
     geom_point(size = 1, color = "black") +
     geom_smooth(method = "loess", se = FALSE, color = "red", linewidth = 1) +  # Línea suavizada
     geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, color = "black") +
@@ -255,7 +256,7 @@ baseNinosENDES <- rech6 %>%
 ### Anemia - por quintiles ### usar esta forma para los demás resultados!! 
     
     base_NinosEndesf <- baseNinosENDES %>% filter(hv270 %in% c(1, 5))
-    anemiaq <-ggplot(data = base_NinosEndesf, aes(x = edad_5, y = porcentaje_anemia, color = as.factor(hv270))) + 
+    anemiaq <-ggplot(data = base_NinosEndesf, aes(x = edad_6, y = porcentaje_anemia, color = as.factor(hv270))) + 
       geom_point(size = 1) +
       geom_smooth(aes(group = hv270), method = "loess", se = FALSE, size = 1) +  # Línea suavizada para cada quintil
       geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) + 
@@ -268,7 +269,7 @@ baseNinosENDES <- rech6 %>%
       theme_minimal() +
       theme(text = element_text(family = "Arial")) +  # Cambiar la fuente a Arial
       geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
-      scale_x_continuous(breaks = seq(5, 60, by = 5)) +
+      scale_x_continuous(breaks = seq(6, 60, by = 6)) +
       scale_color_manual(
         values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde agua
                    "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo oscuro
@@ -323,8 +324,7 @@ baseNinosENDES <- rech6 %>%
   
     output_file <- file.path(dirOutput, "Prevalencia de DCI por quintiles.png")
     ggsave(filename = output_file, plot = DCIq, width = 10, height = 6, dpi = 300, bg ="white")
-  
-    ## Pendiente: usar factores de expansión para calcular los weighted mean 
+
   
 # Resultados DIT ## ----
 ###Base DIT ### 
@@ -569,7 +569,7 @@ baseNinosENDES <- rech6 %>%
         theme_minimal() +
         theme(text = element_text(family = "Arial")) +  
         geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60,66), linetype = "dashed", color = "red") +  # Líneas verticales
-        scale_x_continuous(breaks = seq(24, 71, by = 5), limits = c(24, 71)) +
+        scale_x_continuous(breaks = seq(24, 71, by = 6), limits = c(24, 71)) +
         scale_color_manual(
           values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
                      "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
@@ -618,7 +618,7 @@ baseNinosENDES <- rech6 %>%
           theme_minimal() +
           theme(text = element_text(family = "Arial")) +  
           geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60,66), linetype = "dashed", color = "red") +  # Líneas verticales
-          scale_x_continuous(breaks = seq(9, 36, by = 5), limits = c(9, 36)) +
+          scale_x_continuous(breaks = seq(9, 36, by = 3), limits = c(9, 36)) +
           scale_color_manual(
             values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
                        "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza
@@ -667,7 +667,7 @@ baseNinosENDES <- rech6 %>%
           theme_minimal() +
           theme(text = element_text(family = "Arial")) +  
           geom_vline(xintercept = c(6, 12, 18, 24, 30, 36, 42, 48, 54, 60), linetype = "dashed", color = "red") +  # Líneas verticales
-          scale_x_continuous(breaks = seq(9, 18, by = 4), limits = c(9, 18)) +
+          scale_x_continuous(breaks = seq(9, 18, by = 3), limits = c(9, 18)) +
           scale_color_manual(
             values = c("5" = rgb(17, 99, 97, maxColorValue = 255),  # Verde videnza
                        "1" = rgb(200, 70, 60, maxColorValue = 255)), # Rojo videnza

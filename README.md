@@ -14,3 +14,10 @@ This project uses data from official Peruvian government sources, including:
 
 ## Sample visualizations
 ![Prevalencia de DCI por quintiles](https://github.com/cesarnunezh/PDB-DIT/blob/main/Output/Prevalencia%20de%20DCI%20por%20quintiles.png)
+
+## 👨‍💻 Authors
+
+| **Name**         | **Role**               | **LinkedIn**                                                                 |
+|------------------|------------------------|------------------------------------------------------------------------------|
+| [César Núñez](https://github.com/cesarnunezh)   | Data analysis and visualizations | [LinkedIn](https://www.linkedin.com/in/cesarnunezh/)                    |
+| [Jennifer Prado](https://github.com/jenniprq)   | Data extraction, cleaning and visualizations | [LinkedIn](https://www.linkedin.com/in/jennifer-prado-quispe)                |
